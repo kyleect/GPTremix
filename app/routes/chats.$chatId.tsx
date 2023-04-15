@@ -8,36 +8,36 @@ import {
 } from "@remix-run/react";
 import invariant from "tiny-invariant";
 
-import { deleteNote, getNote } from "~/models/note.server";
+import { deleteChat, getChat } from "~/models/note.server";
 import { requireUserId } from "~/session.server";
 
 export async function loader({ request, params }: LoaderArgs) {
   const userId = await requireUserId(request);
-  invariant(params.noteId, "noteId not found");
+  invariant(params.chatId, "chatId not found");
 
-  const note = await getNote({ userId, id: params.noteId });
-  if (!note) {
+  const chat = await getChat({ userId, id: params.chatId });
+  if (!chat) {
     throw new Response("Not Found", { status: 404 });
   }
-  return json({ note });
+  return json({ chat });
 }
 
 export async function action({ request, params }: ActionArgs) {
   const userId = await requireUserId(request);
-  invariant(params.noteId, "noteId not found");
+  invariant(params.chatId, "chatId not found");
 
-  await deleteNote({ userId, id: params.noteId });
+  await deleteChat({ userId, id: params.chatId });
 
-  return redirect("/notes");
+  return redirect("/chats");
 }
 
-export default function NoteDetailsPage() {
+export default function ChatDetailsPage() {
   const data = useLoaderData<typeof loader>();
 
   return (
     <div>
-      <h3 className="text-2xl font-bold">{data.note.title}</h3>
-      <p className="py-6">{data.note.body}</p>
+      <h3 className="text-2xl font-bold">Chat</h3>
+      <p className="py-6">...</p>
       <hr className="my-4" />
       <Form method="post">
         <button
@@ -63,7 +63,7 @@ export function ErrorBoundary() {
   }
 
   if (error.status === 404) {
-    return <div>Note not found</div>;
+    return <div>Chat not found</div>;
   }
 
   return <div>An unexpected error occurred: {error.statusText}</div>;

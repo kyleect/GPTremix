@@ -18,25 +18,53 @@ export async function action({ request }: ActionArgs) {
   const formData = await request.formData();
   const email = formData.get("email");
   const password = formData.get("password");
+  const openAiKey = formData.get("openaikey");
   const redirectTo = safeRedirect(formData.get("redirectTo"), "/");
 
   if (!validateEmail(email)) {
     return json(
-      { errors: { email: "Email is invalid", password: null } },
+      {
+        errors: { email: "Email is invalid", password: null, openaikey: null },
+      },
       { status: 400 }
     );
   }
 
   if (typeof password !== "string" || password.length === 0) {
     return json(
-      { errors: { email: null, password: "Password is required" } },
+      {
+        errors: {
+          email: null,
+          password: "Password is required",
+          openaikey: null,
+        },
+      },
       { status: 400 }
     );
   }
 
   if (password.length < 8) {
     return json(
-      { errors: { email: null, password: "Password is too short" } },
+      {
+        errors: {
+          email: null,
+          password: "Password is too short",
+          openaikey: null,
+        },
+      },
+      { status: 400 }
+    );
+  }
+
+  if (typeof openAiKey !== "string" || openAiKey.length === 0) {
+    return json(
+      {
+        errors: {
+          email: null,
+          password: null,
+          openaikey: "Open AI Key is required",
+        },
+      },
       { status: 400 }
     );
   }
@@ -48,13 +76,14 @@ export async function action({ request }: ActionArgs) {
         errors: {
           email: "A user already exists with this email",
           password: null,
+          openaikey: null,
         },
       },
       { status: 400 }
     );
   }
 
-  const user = await createUser(email, password);
+  const user = await createUser(email, password, openAiKey);
 
   return createUserSession({
     request,
@@ -134,6 +163,31 @@ export default function Join() {
               {actionData?.errors?.password && (
                 <div className="pt-1 text-red-700" id="password-error">
                   {actionData.errors.password}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div>
+            <label
+              htmlFor="openaikey"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Open API Key
+            </label>
+            <div className="mt-1">
+              <input
+                id="openaikey"
+                name="openaikey"
+                type="text"
+                autoComplete="new-password"
+                aria-invalid={actionData?.errors?.openaikey ? true : undefined}
+                aria-describedby="openaikey-error"
+                className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
+              />
+              {actionData?.errors?.openaikey && (
+                <div className="pt-1 text-red-700" id="openaikey-error">
+                  {actionData.errors.openaikey}
                 </div>
               )}
             </div>

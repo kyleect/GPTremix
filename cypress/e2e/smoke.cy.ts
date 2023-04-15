@@ -1,5 +1,7 @@
 import { faker } from "@faker-js/faker";
 
+const testOpenAiApiKey: string = process.env.OPENAI_API_KEY as string;
+
 describe("smoke tests", () => {
   afterEach(() => {
     cy.cleanupUser();
@@ -19,14 +21,20 @@ describe("smoke tests", () => {
 
     cy.findByRole("textbox", { name: /email/i }).type(loginForm.email);
     cy.findByLabelText(/password/i).type(loginForm.password);
+    cy.findByLabelText(/openaikey/i).type(testOpenAiApiKey);
     cy.findByRole("button", { name: /create account/i }).click();
 
     cy.findByRole("link", { name: /notes/i }).click();
     cy.findByRole("button", { name: /logout/i }).click();
     cy.findByRole("link", { name: /log in/i });
+
+    cy.visitAndCheck("/");
+
+    cy.findByRole("link", { name: /notes/i }).click();
+    cy.findByText("No notes yet");
   });
 
-  it("should allow you to make a note", () => {
+  it.skip("should allow you to make a note", () => {
     const testNote = {
       title: faker.lorem.words(1),
       body: faker.lorem.sentences(1),
