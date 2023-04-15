@@ -37,7 +37,7 @@ export default function ChatDetailsPage() {
   return (
     <div>
       <h3 className="text-2xl font-bold">Chat</h3>
-      <p className="py-6">...</p>
+      <p className="py-6">{data.chat.systemContext}</p>
       <hr className="my-4" />
       <Form method="post">
         <button

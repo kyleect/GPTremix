@@ -1,4 +1,4 @@
-import type { User, Chat } from "@prisma/client";
+import type { User, Chat, Message } from "@prisma/client";
 
 import { prisma } from "~/db.server";
 
@@ -11,7 +11,7 @@ export function getChat({
   userId: User["id"];
 }) {
   return prisma.chat.findFirst({
-    select: { id: true, messages: true },
+    select: { id: true, messages: true, systemContext: true },
     where: { id, userId },
   });
 }
@@ -24,12 +24,13 @@ export function getChatListItems({ userId }: { userId: User["id"] }) {
   });
 }
 
-export function createChat({ userId }: { userId: User["id"] }) {
+export function createChat(
+  { userId }: { userId: User["id"] },
+  systemContext: string
+) {
   return prisma.chat.create({
     data: {
-      messages: {
-        create: [],
-      },
+      systemContext,
       user: {
         connect: {
           id: userId,
