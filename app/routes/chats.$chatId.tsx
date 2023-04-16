@@ -107,8 +107,7 @@ export default function ChatDetailsPage() {
 
   return (
     <div>
-      <h3 className="text-2xl font-bold">Chat</h3>
-      <p className="py-6">{data.chat.systemContext}</p>
+      <h3 className="text-2xl font-bold">{data.chat.systemContext}</h3>
       <hr className="my-4" />
 
       {data.chat.messages.length > 0 && (
@@ -138,7 +137,7 @@ export default function ChatDetailsPage() {
               ref={inputRef}
               name="userInput"
               rows={8}
-              key={data.chat.messages.toString()}
+              key={data.chat.messages.length.toString()}
               className="w-full flex-1 rounded-md border-2 border-blue-500 px-3 py-2 text-lg leading-6"
               aria-invalid={actionData?.errors?.userInput ? true : undefined}
               aria-errormessage={
