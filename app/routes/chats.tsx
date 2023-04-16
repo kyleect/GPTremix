@@ -7,7 +7,6 @@ import { useUser } from "~/utils";
 import { getChatListItems } from "~/models/chat.server";
 
 export async function loader({ request }: LoaderArgs) {
-  console.log("LOADER");
   const userId = await requireUserId(request);
   const chatListItems = await getChatListItems({ userId });
   return json({ chatListItems });
