@@ -148,6 +148,7 @@ export default function ChatDetailsPage() {
               aria-errormessage={
                 actionData?.errors?.userInput ? "user-input-error" : undefined
               }
+              autoFocus
             />
           </label>
           {actionData?.errors?.userInput && (
