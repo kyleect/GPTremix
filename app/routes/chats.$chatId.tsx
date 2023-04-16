@@ -134,7 +134,7 @@ export default function ChatDetailsPage() {
       )}
 
       <hr className="my-4" />
-      <Form method="post">
+      <Form method="post" replace>
         <div>
           <label className="flex w-full flex-col gap-1">
             <textarea
