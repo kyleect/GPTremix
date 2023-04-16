@@ -3,7 +3,7 @@ import { json, redirect } from "@remix-run/node";
 import { Form, useActionData } from "@remix-run/react";
 import * as React from "react";
 
-import { createChat } from "~/models/note.server";
+import { createChat } from "~/models/chat.server";
 import { requireUserId } from "~/session.server";
 
 export async function action({ request }: ActionArgs) {

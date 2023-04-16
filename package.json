@@ -22,7 +22,8 @@
     "pretest:e2e:run": "npm run build",
     "test:e2e:run": "cross-env PORT=8811 start-server-and-test start:mocks http://localhost:8811 \"npx cypress run\"",
     "typecheck": "tsc && tsc -p cypress",
-    "validate": "run-p \"test -- --run\" lint typecheck test:e2e:run"
+    "validate": "run-p \"test -- --run\" lint typecheck test:e2e:run",
+    "remix": "remix"
   },
   "prettier": {},
   "eslintIgnore": [
@@ -38,6 +39,7 @@
     "@remix-run/server-runtime": "^1.15.0",
     "bcryptjs": "^2.4.3",
     "isbot": "^3.6.7",
+    "openai": "^3.2.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "tiny-invariant": "^1.3.1"

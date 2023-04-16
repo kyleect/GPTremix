@@ -40,6 +40,40 @@ export function createChat(
   });
 }
 
+export function addMessage({
+  chatId,
+  role,
+  content,
+}: {
+  chatId: Chat["id"];
+  role: Message["role"];
+  content: Message["content"];
+}) {
+  return prisma.message.create({
+    data: {
+      role,
+      content,
+      chat: {
+        connect: {
+          id: chatId,
+        },
+      },
+    },
+  });
+}
+
+export function getChatMessages({ chatId }: { chatId: Chat["id"] }) {
+  return prisma.message.findMany({
+    where: {
+      chatId,
+    },
+    select: {
+      role: true,
+      content: true,
+    },
+  });
+}
+
 export function deleteChat({
   id,
   userId,

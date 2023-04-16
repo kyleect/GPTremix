@@ -4,9 +4,10 @@ import { Form, Link, NavLink, Outlet, useLoaderData } from "@remix-run/react";
 
 import { requireUserId } from "~/session.server";
 import { useUser } from "~/utils";
-import { getChatListItems } from "~/models/note.server";
+import { getChatListItems } from "~/models/chat.server";
 
 export async function loader({ request }: LoaderArgs) {
+  console.log("LOADER");
   const userId = await requireUserId(request);
   const chatListItems = await getChatListItems({ userId });
   return json({ chatListItems });
@@ -34,7 +35,7 @@ export default function NotesPage() {
       </header>
 
       <main className="flex h-full bg-white">
-        <div className="h-full w-80 border-r bg-gray-50">
+        <div className="h-full w-1/6 border-r bg-gray-50">
           <Link to="new" className="block p-4 text-xl text-blue-500">
             + New Chat
           </Link>
@@ -49,11 +50,13 @@ export default function NotesPage() {
                 <li key={chat.id}>
                   <NavLink
                     className={({ isActive }) =>
-                      `block border-b p-4 text-xl ${isActive ? "bg-white" : ""}`
+                      `block overflow-hidden text-ellipsis border-b p-4 text-xl ${
+                        isActive ? "bg-white" : ""
+                      }`
                     }
                     to={chat.id}
                   >
-                    📝 {chat.id}
+                    📝&nbsp;{chat.id}
                   </NavLink>
                 </li>
               ))}
@@ -61,7 +64,7 @@ export default function NotesPage() {
           )}
         </div>
 
-        <div className="flex-1 p-6">
+        <div className="w-5/6 flex-1 p-6">
           <Outlet />
         </div>
       </main>
