@@ -5,6 +5,7 @@ import {
   isRouteErrorResponse,
   useActionData,
   useLoaderData,
+  useNavigation,
   useRouteError,
 } from "@remix-run/react";
 import { ChatCompletionRequestMessage, Configuration, OpenAIApi } from "openai";
@@ -98,6 +99,9 @@ export default function ChatDetailsPage() {
   const actionData = useActionData<typeof action>();
   const data = useLoaderData<typeof loader>();
   const inputRef = React.useRef<HTMLTextAreaElement>(null);
+  const navigation = useNavigation();
+
+  const isReady = navigation.state === "idle";
 
   React.useEffect(() => {
     if (actionData?.errors?.userInput) {
@@ -134,11 +138,12 @@ export default function ChatDetailsPage() {
         <div>
           <label className="flex w-full flex-col gap-1">
             <textarea
+              disabled={!isReady}
               ref={inputRef}
               name="userInput"
               rows={8}
               key={data.chat.messages.length.toString()}
-              className="w-full flex-1 rounded-md border-2 border-blue-500 px-3 py-2 text-lg leading-6"
+              className="w-full flex-1 rounded-md border-2 border-blue-500 px-3 py-2 text-lg leading-6 disabled:border-gray-400"
               aria-invalid={actionData?.errors?.userInput ? true : undefined}
               aria-errormessage={
                 actionData?.errors?.userInput ? "user-input-error" : undefined
@@ -154,9 +159,10 @@ export default function ChatDetailsPage() {
 
         <button
           type="submit"
-          className="my-5 rounded bg-blue-500  px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400"
+          className="my-5 rounded bg-blue-500  px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400 disabled:bg-gray-400"
+          disabled={!isReady}
         >
-          Send
+          {isReady ? "Send" : "Sending..."}
         </button>
       </Form>
     </div>
