@@ -13,7 +13,7 @@ export default function Index() {
         <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
           <div className="relative sm:overflow-hidden sm:rounded-2xl">
             <div className="relative px-4 pb-8 pt-16 sm:px-6 sm:pb-14 sm:pt-24 lg:px-8 lg:pb-20 lg:pt-32">
-              <h1 className="text-center text-6xl font-extrabold tracking-tight sm:text-8xl lg:text-9xl">
+              <h1 className="cursor-default text-center text-6xl font-extrabold tracking-tight sm:text-8xl lg:text-9xl">
                 <span className="block text-purple-700">GPTremix</span>
               </h1>
               <div className="mx-auto mt-10 max-w-sm sm:flex sm:max-w-none sm:justify-center">
@@ -25,10 +25,14 @@ export default function Index() {
                     >
                       Chats
                     </Link>
-                    <Form action="/logout" method="post">
+                    <Form
+                      action="/logout"
+                      method="post"
+                      className="flex items-center justify-center"
+                    >
                       <button
                         type="submit"
-                        className="flex items-center justify-center rounded-md bg-gray-500 px-4 py-3 font-medium text-white hover:bg-gray-600"
+                        className="rounded-md bg-gray-500 px-4 py-3 font-medium text-white hover:bg-gray-600"
                       >
                         Logout
                       </button>
