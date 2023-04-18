@@ -1,4 +1,4 @@
-app = "guess-my-job-db46"
+app = "GPTremix"
 kill_signal = "SIGINT"
 kill_timeout = 5
 processes = [ ]
