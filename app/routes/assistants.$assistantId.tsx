@@ -27,6 +27,8 @@ export async function loader({ request, params }: LoaderArgs) {
 export default function AssistantDetailsPage() {
     const data = useLoaderData<typeof loader>();
 
+    const assistantExport = JSON.stringify({ name: data.assistant.name, prompt: data.assistant.prompt });
+
     return (
         <div>
             <h3 className="text-2xl font-bold">{data.assistant.name}</h3>
@@ -44,6 +46,14 @@ export default function AssistantDetailsPage() {
                         );
                     })}
                 </ol>
+            </div>
+
+            <div className="mt-5">
+                <h4 className="text-xl font-medium">Export</h4>
+
+                <pre className="mt-4">
+                    {assistantExport}
+                </pre>
             </div>
         </div>
     );
