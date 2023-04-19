@@ -57,12 +57,7 @@ export async function action({ request, params }: ActionArgs) {
     } as ChatCompletionRequestMessage)
   );
 
-  // Persist user's latest input as a message
-  await addMessage({
-    chatId: chat.id,
-    role: "user",
-    content: userInput,
-  });
+
 
   const conf = new Configuration({
     apiKey: user.settings.openAiKey,
@@ -85,13 +80,24 @@ export async function action({ request, params }: ActionArgs) {
   });
 
   const response = gptChatCompletion.data.choices[0].message;
+  const promptTokens = gptChatCompletion.data.usage?.prompt_tokens;
+  const completionTokens = gptChatCompletion.data.usage?.completion_tokens;
 
   invariant(response?.content, "GPT response did not return valid response");
+
+  // Persist user's latest input as a message
+  await addMessage({
+    chatId: chat.id,
+    role: "user",
+    content: userInput,
+    tokens: promptTokens ?? 0
+  });
 
   await addMessage({
     chatId: params.chatId,
     role: "assistant",
     content: response?.content,
+    tokens: completionTokens ?? 0
   });
 
   return json({ errors: null });
@@ -113,30 +119,29 @@ export default function ChatDetailsPage() {
 
   return (
     <div>
-      <h3 className="text-2xl font-bold">Chatting With <Link to={`/assistants/${data.chat.assistant.id}`} className="text-blue-700">{data.chat.assistant.name}</Link></h3>
-      <hr className="my-4" />
+      <h3 className="text-2xl mb-4 font-bold">Chatting With <Link to={`/assistants/${data.chat.assistant.id}`} className="text-blue-700">{data.chat.assistant.name}</Link></h3>
 
       {data.chat.messages.length > 0 && (
         <ol>
           {data.chat.messages.map((message) => {
             return (
-              <li key={message.id} className="p-5 text-lg">
-                <span className="font-bold capitalize after:content-[':']">
+              <li key={message.id} className={`p-5 text-lg border mb-4 border-gray-300 rounded-md ${message.role === "user" ? "bg-white" : "bg-gray-100"}`}>
+                <div className="font-bold capitalize after:content-[':']">
                   {message.role}
-                </span>{" "}
-                <span>
-                  <pre className="whitespace-pre-wrap font-sans">
+                </div>{" "}
+                <div>
+                  <pre className="whitespace-pre-wrap font-sans mt-2">
                     {message.content}
                   </pre>
-                </span>
+                </div>
+                <p className="text-base text-gray-500 mt-5">{message.tokens} tokens</p>
               </li>
             );
           })}
         </ol>
       )}
 
-      <hr className="my-4" />
-      <Form method="post" replace>
+      <Form method="post" replace className="mt-4">
         <div>
           <label className="flex w-full flex-col gap-1">
             <textarea
