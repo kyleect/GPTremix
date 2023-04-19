@@ -1,6 +1,7 @@
 import type { LoaderArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import {
+    Link,
     isRouteErrorResponse,
     useLoaderData,
     useRouteError,
@@ -29,7 +30,21 @@ export default function AssistantDetailsPage() {
     return (
         <div>
             <h3 className="text-2xl font-bold">{data.assistant.name}</h3>
-            <p>{data.assistant.prompt}</p>
+            <p className="text-lg mt-5">{data.assistant.prompt}</p>
+
+            <div className="mt-5">
+                <h4 className="text-xl font-medium">Chats</h4>
+
+                <ol className="mt-2">
+                    {data.assistant.chats.map(chat => {
+                        return (
+                            <li key={chat.id} className="py-2">
+                                <Link to={`/chats/${chat.id}`} className="text-base text-blue-700 mt-3">{chat.id}</Link>
+                            </li>
+                        );
+                    })}
+                </ol>
+            </div>
         </div>
     );
 }

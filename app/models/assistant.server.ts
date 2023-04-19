@@ -11,7 +11,7 @@ export function getAssistant({
     userId: User["id"];
 }) {
     return prisma.assistant.findFirst({
-        select: { id: true, name: true, prompt: true },
+        select: { id: true, name: true, prompt: true, chats: true },
         where: { id, userId },
     });
 }

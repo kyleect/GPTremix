@@ -14,9 +14,9 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  password  Password?
-  settings  UserSettings?
-  chats     Chat[]
+  password   Password?
+  settings   UserSettings?
+  chats      Chat[]
   assistants Assistant[]
 }
 
@@ -42,11 +42,13 @@ model Assistant {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  name String
+  name   String
   prompt String
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId String
+
+  chats Chat[]
 }
 
 model Chat {
@@ -55,10 +57,11 @@ model Chat {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  systemContext String
-
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId String
+
+  assistant   Assistant @relation(fields: [assistantId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  assistantId String
 
   messages Message[]
 }

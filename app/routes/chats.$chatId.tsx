@@ -2,13 +2,15 @@ import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import {
   Form,
+  Link,
   isRouteErrorResponse,
   useActionData,
   useLoaderData,
   useNavigation,
   useRouteError,
 } from "@remix-run/react";
-import { ChatCompletionRequestMessage, Configuration, OpenAIApi } from "openai";
+import type { ChatCompletionRequestMessage } from "openai";
+import { Configuration, OpenAIApi } from "openai";
 import React from "react";
 import invariant from "tiny-invariant";
 
@@ -49,10 +51,10 @@ export async function action({ request, params }: ActionArgs) {
 
   const messageHistory = chat.messages.map(
     ({ role, content }) =>
-      ({
-        role,
-        content,
-      } as ChatCompletionRequestMessage)
+    ({
+      role,
+      content,
+    } as ChatCompletionRequestMessage)
   );
 
   // Persist user's latest input as a message
@@ -72,7 +74,7 @@ export async function action({ request, params }: ActionArgs) {
     messages: [
       {
         role: "system",
-        content: chat.systemContext,
+        content: chat.assistant.prompt,
       },
       ...messageHistory,
       {
@@ -111,7 +113,7 @@ export default function ChatDetailsPage() {
 
   return (
     <div>
-      <h3 className="text-2xl font-bold">{data.chat.systemContext}</h3>
+      <h3 className="text-2xl font-bold">Chatting With <Link to={`/assistants/${data.chat.assistant.id}`} className="text-blue-700">{data.chat.assistant.name}</Link></h3>
       <hr className="my-4" />
 
       {data.chat.messages.length > 0 && (

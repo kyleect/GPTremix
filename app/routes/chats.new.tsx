@@ -33,7 +33,7 @@ export async function action({ request }: ActionArgs) {
 
   invariant(assistant, "Assistant not found");
 
-  const chat = await createChat({ userId }, assistant.prompt);
+  const chat = await createChat({ userId, assistantId: assistant.id });
 
   return redirect(`/chats/${chat.id}`);
 }

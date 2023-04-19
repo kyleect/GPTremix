@@ -48,13 +48,12 @@ export default function ChatsPage() {
                 <li key={chat.id}>
                   <NavLink
                     className={({ isActive }) =>
-                      `block overflow-hidden text-ellipsis border-b p-4 text-xl ${
-                        isActive ? "bg-white" : ""
+                      `block overflow-hidden text-ellipsis border-b p-4 text-xl ${isActive ? "bg-white" : ""
                       }`
                     }
                     to={chat.id}
                   >
-                    📝&nbsp;{chat.id}
+                    📝&nbsp;Chat With {chat.assistant.name}
                   </NavLink>
                 </li>
               ))}
