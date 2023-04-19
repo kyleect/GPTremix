@@ -57,8 +57,6 @@ export async function action({ request, params }: ActionArgs) {
     } as ChatCompletionRequestMessage)
   );
 
-
-
   const conf = new Configuration({
     apiKey: user.settings.openAiKey,
   });
@@ -80,8 +78,6 @@ export async function action({ request, params }: ActionArgs) {
   });
 
   const response = gptChatCompletion.data.choices[0].message;
-  const promptTokens = gptChatCompletion.data.usage?.prompt_tokens;
-  const completionTokens = gptChatCompletion.data.usage?.completion_tokens;
 
   invariant(response?.content, "GPT response did not return valid response");
 
@@ -89,15 +85,13 @@ export async function action({ request, params }: ActionArgs) {
   await addMessage({
     chatId: chat.id,
     role: "user",
-    content: userInput,
-    tokens: promptTokens ?? 0
+    content: userInput
   });
 
   await addMessage({
     chatId: params.chatId,
     role: "assistant",
-    content: response?.content,
-    tokens: completionTokens ?? 0
+    content: response?.content
   });
 
   return json({ errors: null });
@@ -134,7 +128,6 @@ export default function ChatDetailsPage() {
                     {message.content}
                   </pre>
                 </div>
-                <p className="text-base text-gray-500 mt-5">{message.tokens} tokens</p>
               </li>
             );
           })}

@@ -46,19 +46,16 @@ export function createChat(
 export function addMessage({
   chatId,
   role,
-  content,
-  tokens
+  content
 }: {
   chatId: Chat["id"];
   role: Message["role"];
   content: Message["content"];
-  tokens: Message["tokens"]
 }) {
   return prisma.message.create({
     data: {
       role,
       content,
-      tokens,
       chat: {
         connect: {
           id: chatId,
@@ -75,8 +72,7 @@ export function getChatMessages({ chatId }: { chatId: Chat["id"] }) {
     },
     select: {
       role: true,
-      content: true,
-      tokens: true
+      content: true
     },
   });
 }
