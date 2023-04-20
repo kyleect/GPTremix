@@ -1,6 +1,6 @@
 import type { ActionArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { Form, useActionData } from "@remix-run/react";
+import { Form, Link, useActionData } from "@remix-run/react";
 import * as React from "react";
 import { createAssistant } from "~/models/assistant.server";
 
@@ -28,9 +28,20 @@ export async function action({ request }: ActionArgs) {
         );
     }
 
-    const assistant = await createAssistant({ userId, name, prompt });
+    try {
+        const assistant = await createAssistant({ userId, name, prompt });
 
-    return redirect(`/assistants/${assistant.id}`);
+        return redirect(`/assistants/${assistant.id}`);
+    } catch (e) {
+        if (e instanceof Error && e.message.includes("Unique constraint failed on the fields")) {
+            return json(
+                { errors: { name: `Assistant names must be unique!`, prompt: null } },
+                { status: 400 }
+            );
+        }
+
+        throw e;
+    }
 }
 
 export default function NewAssistantPage() {
@@ -46,69 +57,73 @@ export default function NewAssistantPage() {
         }
     }, [actionData]);
 
-    return <Form
-        method="post"
-        style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: 8,
-            width: "100%",
-        }}
-    >
-        <div>
-            <label className="flex w-full flex-col gap-1">
-                <span>Name: </span>
-                <input
-                    ref={nameRef}
-                    name="name"
-                    className="w-full flex-1 rounded-md border-2 border-blue-500 px-3 py-2 text-lg leading-6"
-                    aria-invalid={actionData?.errors?.name ? true : undefined}
-                    placeholder="Helpful Assistant"
-                    aria-errormessage={
-                        actionData?.errors?.prompt
-                            ? "prompt-error"
-                            : undefined
-                    }
-                />
-            </label>
-            {actionData?.errors?.name && (
-                <div className="pt-1 text-red-700" id="prompt-error">
-                    {actionData.errors.name}
-                </div>
-            )}
-        </div>
+    return <>
+        <Form
+            method="post"
+            style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 8,
+                width: "100%",
+            }}
+        >
+            <div>
+                <label className="flex w-full flex-col gap-1">
+                    <span>Name: </span>
+                    <input
+                        ref={nameRef}
+                        name="name"
+                        className="w-full flex-1 rounded-md border-2 border-blue-500 px-3 py-2 text-lg leading-6"
+                        aria-invalid={actionData?.errors?.name ? true : undefined}
+                        placeholder="Helpful Assistant"
+                        aria-errormessage={
+                            actionData?.errors?.prompt
+                                ? "prompt-error"
+                                : undefined
+                        }
+                    />
+                </label>
+                {actionData?.errors?.name && (
+                    <div className="pt-1 text-red-700" id="prompt-error">
+                        {actionData.errors.name}
+                    </div>
+                )}
+            </div>
 
-        <div>
-            <label className="flex w-full flex-col gap-1">
-                <span>Prompt: </span>
-                <textarea
-                    ref={promptRef}
-                    name="prompt"
-                    rows={8}
-                    className="w-full flex-1 rounded-md border-2 border-blue-500 px-3 py-2 text-lg leading-6"
-                    aria-invalid={actionData?.errors?.prompt ? true : undefined}
-                    placeholder="You are a helpful assistant."
-                    aria-errormessage={
-                        actionData?.errors?.prompt
-                            ? "prompt-error"
-                            : undefined
-                    }
-                >You are a helpful assistant.</textarea>
-            </label>
-            {actionData?.errors?.prompt && (
-                <div className="pt-1 text-red-700" id="prompt-error">
-                    {actionData.errors.prompt}
-                </div>
-            )}
-        </div>
+            <div>
+                <label className="flex w-full flex-col gap-1">
+                    <span>Prompt: </span>
+                    <textarea
+                        ref={promptRef}
+                        name="prompt"
+                        rows={8}
+                        className="w-full flex-1 rounded-md border-2 border-blue-500 px-3 py-2 text-lg leading-6"
+                        aria-invalid={actionData?.errors?.prompt ? true : undefined}
+                        placeholder="You are a helpful assistant."
+                        aria-errormessage={
+                            actionData?.errors?.prompt
+                                ? "prompt-error"
+                                : undefined
+                        }
+                    >You are a helpful assistant.</textarea>
+                </label>
+                {actionData?.errors?.prompt && (
+                    <div className="pt-1 text-red-700" id="prompt-error">
+                        {actionData.errors.prompt}
+                    </div>
+                )}
+            </div>
 
-        <div className="text-right">
-            <button
-                type="submit"
-                className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400"
-            >
-                Save
-            </button>
-        </div>
-    </Form>
+            <div className="text-right">
+                <button
+                    type="submit"
+                    className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400"
+                >
+                    Save
+                </button>
+            </div>
+        </Form>
+
+        <p>Or <Link to="/assistants/import" className="text-base font-medium text-blue-700 mt-3">import an assistant</Link></p>
+    </>
 }

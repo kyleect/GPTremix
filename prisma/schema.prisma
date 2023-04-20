@@ -49,6 +49,8 @@ model Assistant {
   userId String
 
   chats Chat[]
+
+  @@unique([userId, name])
 }
 
 model Chat {
