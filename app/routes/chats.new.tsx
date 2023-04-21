@@ -1,6 +1,6 @@
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { Form, Link, useActionData, useLoaderData } from "@remix-run/react";
+import { Form, Link, useActionData, useLoaderData, useSearchParams } from "@remix-run/react";
 import * as React from "react";
 import invariant from "tiny-invariant";
 import { getAssistant, getAssistants } from "~/models/assistant.server";
@@ -42,6 +42,9 @@ export default function NewChatPage() {
   const actionData = useActionData<typeof action>();
   const data = useLoaderData<typeof loader>();
   const assistantRef = React.useRef<HTMLSelectElement>(null);
+  const [queryParams] = useSearchParams();
+
+  const maybeAssistantId = queryParams.get("assistantId");
 
   React.useEffect(() => {
     if (actionData?.errors?.assistant) {
@@ -78,7 +81,7 @@ export default function NewChatPage() {
               }
             >
               {data.assistants.map(assistant => {
-                return <option key={assistant.id} value={assistant.id}>{assistant.name}</option>;
+                return <option key={assistant.id} value={assistant.id} selected={assistant.id === maybeAssistantId}>{assistant.name}</option>;
               })}
             </select>
           </label>

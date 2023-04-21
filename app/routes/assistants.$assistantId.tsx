@@ -37,12 +37,15 @@ export default function AssistantDetailsPage() {
     return (
         <div>
             <h3 className="text-xl sm:text-2xl font-bold">{data.assistant.name}</h3>
-            <p className="text-md sm:text-lg mt-5 italic">{data.assistant.prompt}</p>
+            <p className="mt-5 italic">{data.assistant.prompt}</p>
 
             <div className="mt-5">
                 <h4 className="text-lg sm:text-xl font-medium">Chats</h4>
 
                 <ol className="mt-2">
+                    <li><Link to={`/chats/new?assistantId=${data.assistant.id}`} className="block py-2 text-blue-700">
+                        Start New Chat
+                    </Link></li>
                     {data.assistant.chats.map(chat => {
                         return (
                             <li key={chat.id} className="py-2">
@@ -56,7 +59,7 @@ export default function AssistantDetailsPage() {
             <div className="mt-5">
                 <h4 className="text-lg sm:text-xl font-medium">Export</h4>
 
-                <pre className="mt-5 truncate ...">
+                <pre className="mt-5  truncate ...">
                     {assistantExport}
                 </pre>
 
