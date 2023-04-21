@@ -10,6 +10,7 @@ export default function LoggedInHeader() {
             <ul className="flex w-full justify-around">
                 <li><HeaderNavLink to="/chats">Chats</HeaderNavLink></li>
                 <li><HeaderNavLink to="/assistants">Assistants</HeaderNavLink></li>
+                <li><HeaderNavLink to="/settings">Settings</HeaderNavLink></li>
             </ul>
             <LogoutButton />
         </header>
