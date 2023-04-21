@@ -9,6 +9,7 @@ import {
   useNavigation,
   useRouteError,
 } from "@remix-run/react";
+import { formatRelative } from "date-fns";
 import type { ChatCompletionRequestMessage } from "openai";
 import { Configuration, OpenAIApi } from "openai";
 import React from "react";
@@ -127,6 +128,8 @@ export default function ChatDetailsPage() {
                   <pre className="whitespace-pre-wrap font-sans mt-2">
                     {message.content}
                   </pre>
+
+                  <p className="text-right text-sm">{formatRelative(new Date(message.createdAt), new Date())}</p>
                 </div>
               </li>
             );
