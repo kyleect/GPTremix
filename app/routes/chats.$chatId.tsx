@@ -146,7 +146,7 @@ export default function ChatDetailsPage() {
               name="userInput"
               rows={8}
               key={data.chat.messages.length.toString()}
-              className="w-full flex-1 rounded-md border-2 border-blue-500 px-3 py-2 text-lg leading-6 disabled:border-gray-400"
+              className="w-full flex-1 rounded-md border-2 border-blue-500 px-3 py-2 leading-6 disabled:border-gray-400"
               aria-invalid={actionData?.errors?.userInput ? true : undefined}
               aria-errormessage={
                 actionData?.errors?.userInput ? "user-input-error" : undefined
