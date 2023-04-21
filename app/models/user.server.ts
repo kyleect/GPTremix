@@ -1,4 +1,4 @@
-import type { Password, User } from "@prisma/client";
+import type { Password, User, UserSettings } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 import { prisma } from "~/db.server";
@@ -68,4 +68,15 @@ export async function verifyLogin(
   const { password: _password, ...userWithoutPassword } = userWithPassword;
 
   return userWithoutPassword;
+}
+
+export async function updateUserApiKey(userId: User["id"], newApiKey: UserSettings["openAiKey"]) {
+  return prisma.userSettings.update({
+    where: {
+      userId
+    },
+    data: {
+      openAiKey: newApiKey
+    }
+  });
 }

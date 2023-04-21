@@ -1,4 +1,4 @@
-import { useLoaderData } from "@remix-run/react";
+import { Outlet, useLoaderData } from "@remix-run/react";
 import type { LoaderArgs } from "@remix-run/server-runtime";
 import { json } from "@remix-run/server-runtime";
 import { requireUser } from "~/session.server";
@@ -15,7 +15,9 @@ export default function SettingsProfilePage() {
     const truncatedApiKey = data.user.settings?.openAiKey?.substring(0, 10);
 
     return <div>
-        <p className="font-bold">OpenAI API Key</p>
+        <p className="font-bold">Current OpenAI API Key</p>
         <p>{truncatedApiKey}...</p>
-    </div >;
+
+        <Outlet />
+    </div>;
 }
