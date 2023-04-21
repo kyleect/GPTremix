@@ -73,7 +73,7 @@ export default function NewAssistantPage() {
                     <input
                         ref={nameRef}
                         name="name"
-                        className="w-full flex-1 rounded-md border-2 border-blue-500 px-3 py-2 text-lg leading-6"
+                        className="w-full flex-1 rounded-md border-2 border-blue-500 px-3 py-2 leading-6"
                         aria-invalid={actionData?.errors?.name ? true : undefined}
                         placeholder="Helpful Assistant"
                         aria-errormessage={
@@ -97,7 +97,7 @@ export default function NewAssistantPage() {
                         ref={promptRef}
                         name="prompt"
                         rows={8}
-                        className="w-full flex-1 rounded-md border-2 border-blue-500 px-3 py-2 text-lg leading-6"
+                        className="w-full flex-1 rounded-md border-2 border-blue-500 px-3 py-2 leading-6"
                         aria-invalid={actionData?.errors?.prompt ? true : undefined}
                         placeholder="You are a helpful assistant."
                         aria-errormessage={

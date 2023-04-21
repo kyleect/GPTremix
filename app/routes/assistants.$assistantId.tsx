@@ -6,6 +6,7 @@ import {
     useLoaderData,
     useRouteError,
 } from "@remix-run/react";
+import React from "react";
 import invariant from "tiny-invariant";
 import { getAssistant } from "~/models/assistant.server";
 
@@ -29,19 +30,23 @@ export default function AssistantDetailsPage() {
 
     const assistantExport = JSON.stringify({ name: data.assistant.name, prompt: data.assistant.prompt });
 
+    const copy = React.useCallback(() => {
+        navigator.clipboard.writeText(assistantExport);
+    }, [assistantExport]);
+
     return (
         <div>
-            <h3 className="text-2xl font-bold">{data.assistant.name}</h3>
-            <p className="text-lg mt-5">{data.assistant.prompt}</p>
+            <h3 className="text-xl sm:text-2xl font-bold">{data.assistant.name}</h3>
+            <p className="text-md sm:text-lg mt-5 italic">{data.assistant.prompt}</p>
 
             <div className="mt-5">
-                <h4 className="text-xl font-medium">Chats</h4>
+                <h4 className="text-lg sm:text-xl font-medium">Chats</h4>
 
                 <ol className="mt-2">
                     {data.assistant.chats.map(chat => {
                         return (
                             <li key={chat.id} className="py-2">
-                                <Link to={`/chats/${chat.id}`} className="text-base text-blue-700 mt-3">{chat.id}</Link>
+                                <Link to={`/chats/${chat.id}`} className=" text-blue-700 mt-3">{chat.id}</Link>
                             </li>
                         );
                     })}
@@ -49,11 +54,13 @@ export default function AssistantDetailsPage() {
             </div>
 
             <div className="mt-5">
-                <h4 className="text-xl font-medium">Export</h4>
+                <h4 className="text-lg sm:text-xl font-medium">Export</h4>
 
-                <pre className="mt-4">
+                <pre className="mt-5 truncate ...">
                     {assistantExport}
                 </pre>
+
+                <button type="button" className="rounded-md bg-gray-400 px-4 py-3 mt-5 font-medium text-white hover:bg-gray-500" onClick={copy}>Copy</button>
             </div>
         </div>
     );

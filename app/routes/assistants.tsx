@@ -21,9 +21,9 @@ export default function AssistantsPage() {
         <div className="flex h-full min-h-screen flex-col">
             <LoggedInHeader />
 
-            <main className="flex h-full bg-white">
-                <div className="h-full w-1/6 border-r bg-gray-50">
-                    <Link to="new" className="block p-4 text-xl text-blue-500">
+            <main className="flex h-full bg-white text-sm sm:text-base">
+                <div className="h-full w-3/12 lg:w-2/12 border-r bg-gray-50">
+                    <Link to="new" className="block p-4 text-blue-500">
                         + New Assistant
                     </Link>
 
@@ -37,7 +37,7 @@ export default function AssistantsPage() {
                                 <li key={assistant.id}>
                                     <NavLink
                                         className={({ isActive }) =>
-                                            `block overflow-hidden text-ellipsis border-b p-4 text-xl ${isActive ? "bg-white" : ""
+                                            `block overflow-hidden text-ellipsis border-b p-4 ${isActive ? "bg-white" : ""
                                             }`
                                         }
                                         to={assistant.id}
@@ -50,7 +50,7 @@ export default function AssistantsPage() {
                     )}
                 </div>
 
-                <div className="w-5/6 flex-1 p-6">
+                <div className="w-9/12 lg:w-10/12 flex-1 p-6">
                     <Outlet />
                 </div>
             </main>

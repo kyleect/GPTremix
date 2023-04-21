@@ -114,13 +114,13 @@ export default function ChatDetailsPage() {
 
   return (
     <div>
-      <h3 className="text-2xl mb-4 font-bold">Chatting With <Link to={`/assistants/${data.chat.assistant.id}`} className="text-blue-700">{data.chat.assistant.name}</Link></h3>
+      <h3 className="mb-4 font-bold">Chatting With <Link to={`/assistants/${data.chat.assistant.id}`} className="text-blue-700">{data.chat.assistant.name}</Link></h3>
 
       {data.chat.messages.length > 0 && (
         <ol>
           {data.chat.messages.map((message) => {
             return (
-              <li key={message.id} className={`p-5 text-lg border mb-4 border-gray-300 rounded-md ${message.role === "user" ? "bg-white" : "bg-gray-100"}`}>
+              <li key={message.id} className={`p-5 border mb-4 border-gray-300 rounded-md ${message.role === "user" ? "bg-white" : "bg-gray-100"}`}>
                 <div className="font-bold capitalize after:content-[':']">
                   {message.role}
                 </div>{" "}
@@ -129,7 +129,7 @@ export default function ChatDetailsPage() {
                     {message.content}
                   </pre>
 
-                  <p className="text-right text-sm">{formatRelative(new Date(message.createdAt), new Date())}</p>
+                  <p className="text-right text-xs sm:text-sm pt-5">{formatRelative(new Date(message.createdAt), new Date())}</p>
                 </div>
               </li>
             );

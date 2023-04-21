@@ -52,7 +52,7 @@ export default function NewChatPage() {
   const needsAnAssissant = data.assistants.length === 0;
 
   return (
-    needsAnAssissant ? (<Link to="/assistants/new" className="text-base font-medium text-blue-700 mt-3">Create a new assistant</Link>) :
+    needsAnAssissant ? (<Link to="/assistants/new" className="font-medium text-blue-700 mt-3">Create a new assistant</Link>) :
       <Form
         method="post"
         style={{
@@ -64,11 +64,11 @@ export default function NewChatPage() {
       >
         <div>
           <label className="flex w-full flex-col gap-1">
-            <span className="text-2xl mb-2">Assistant</span>
+            <span className="text-xl sm:text-2xl mb-2">Assistant</span>
             <select
               ref={assistantRef}
               name="assistant"
-              className="w-full flex-1 rounded-md border-2 border-blue-500 px-3 py-2 text-lg leading-6"
+              className="w-full flex-1 rounded-md border-2 border-blue-500 px-3 py-2 leading-6"
               aria-invalid={actionData?.errors?.assistant ? true : undefined}
               placeholder="You are a helpful assistant."
               aria-errormessage={
@@ -89,7 +89,7 @@ export default function NewChatPage() {
           )}
         </div>
 
-        <p>Or <Link to="/assistants/new" className="text-base font-medium text-blue-700 mt-3">create a new assistant</Link></p>
+        <p>Or <Link to="/assistants/new" className="font-medium text-blue-700 mt-3">create a new assistant</Link></p>
 
         <div className="text-right">
           <button

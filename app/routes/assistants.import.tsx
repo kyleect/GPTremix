@@ -84,7 +84,7 @@ export default function NewAssistantPage() {
                     ref={importRef}
                     name="import"
                     rows={8}
-                    className="w-full flex-1 rounded-md border-2 border-blue-500 px-3 py-2 text-lg leading-6"
+                    className="w-full flex-1 rounded-md border-2 border-blue-500 px-3 py-2 leading-6"
                     aria-invalid={actionData?.errors?.import ? true : undefined}
                     placeholder="Paste your exported assistant"
                     aria-errormessage={
