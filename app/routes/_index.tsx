@@ -23,7 +23,7 @@ export default function Index() {
                       to="/chats"
                       className="flex items-center justify-center rounded-md border border-transparent bg-white px-4 py-3 text-base font-medium text-purple-700 shadow-sm hover:bg-purple-50 sm:px-8"
                     >
-                      Chats
+                      Start Chatting
                     </Link>
                     <Form
                       action="/logout"
