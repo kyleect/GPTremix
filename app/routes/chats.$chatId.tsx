@@ -114,15 +114,13 @@ export default function ChatDetailsPage() {
 
   return (
     <div>
-      <h3 className="mb-4 font-bold">Chatting With <Link to={`/assistants/${data.chat.assistant.id}`} className="text-blue-700">{data.chat.assistant.name}</Link></h3>
-
       {data.chat.messages.length > 0 && (
         <ol>
           {data.chat.messages.map((message) => {
             return (
               <li key={message.id} className={`p-5 border mb-4 border-gray-300 rounded-md ${message.role === "user" ? "bg-white" : "bg-gray-100"}`}>
-                <div className="font-bold capitalize after:content-[':']">
-                  {message.role}
+                <div className="font-bold capitalize">
+                  {message.role === "assistant" ? <Link to={`/assistants/${data.chat.assistant.id}`} className="text-blue-700">{data.chat.assistant.name}</Link> : message.role}
                 </div>{" "}
                 <div>
                   <pre className="whitespace-pre-wrap font-sans mt-2">
