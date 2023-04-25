@@ -3,15 +3,13 @@ import { Response } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import {
-    Form,
-    Link,
+    NavLink,
+    Outlet,
     isRouteErrorResponse,
     useLoaderData,
     useRouteError,
 } from "@remix-run/react";
-import React from "react";
 import invariant from "tiny-invariant";
-import { ContextChatMessage } from "~/components/ChatMessage";
 import { deleteAssistant, getAssistant } from "~/models/assistant.server";
 
 import { requireUserId } from "~/session.server";
@@ -51,70 +49,49 @@ export async function loader({ request, params }: LoaderArgs) {
 export default function AssistantDetailsPage() {
     const data = useLoaderData<typeof loader>();
 
-    const assistantExport = JSON.stringify({
-        name: data.assistant.name,
-        messages: data.assistant.contextMessages.map(({ role, content }) => ({ role, content }))
-    });
 
-    const copy = React.useCallback(() => {
-        navigator.clipboard.writeText(assistantExport);
-    }, [assistantExport]);
 
     return (
         <div>
             <h3 className="text-xl sm:text-2xl font-bold">{data.assistant.name}</h3>
 
-            <Form method="post" className="mt-5" onSubmit={(event) => {
-                if (!confirm("Are you sure you want to delete this assistant?")) {
-                    event.preventDefault();
-                }
-            }}>
-                <button name="intent" value="delete" className="rounded-md bg-gray-400 px-4 py-3 font-medium text-white hover:bg-gray-500">Delete</button>
-            </Form>
+            <ul className="my-5 flex justify-between">
+                <li>
+                    <NavLink
+                        className={({ isActive }) => `${isActive ? "font-bold" : undefined} p-2`}
+                        to={`/assistants/${data.assistant.id}`}
+                        end>
+                        Details
+                    </NavLink>
+                </li>
+                <li>
+                    <NavLink
+                        className={({ isActive }) => `${isActive ? "font-bold" : undefined} p-2`}
+                        to={`/assistants/${data.assistant.id}/context`}
+                        end>
+                        Context
+                    </NavLink>
+                </li>
+                <li>
+                    <NavLink
+                        className={({ isActive }) => `${isActive ? "font-bold" : undefined} p-2`}
+                        to={`/assistants/${data.assistant.id}/chats`}
+                        end>
+                        Chats
+                    </NavLink>
+                </li>
+                <li>
+                    <NavLink
+                        className={({ isActive }) => `${isActive ? "font-bold" : undefined} p-2`}
+                        to={`/assistants/${data.assistant.id}/export`}
+                        end>
+                        Export
+                    </NavLink>
+                </li>
+            </ul>
 
             <div className="my-5">
-                <h4 className="text-lg sm:text-xl font-medium mb-5">Context</h4>
-
-                <ol>
-                    {data.assistant.contextMessages.map((contextMessage, i) => {
-                        return (
-                            <li key={i}>
-                                <ContextChatMessage
-                                    authorOrRole={contextMessage.role}
-                                    content={contextMessage.content}
-                                />
-                            </li>
-                        )
-                    })}
-                </ol>
-            </div>
-
-
-            <div className="mt-5">
-                <h4 className="text-lg sm:text-xl font-medium">Chats</h4>
-
-                <ol className="mt-2">
-                    <li><Link to={`/chats/new?assistantId=${data.assistant.id}`} className="block py-2 text-blue-700">
-                        Start New Chat
-                    </Link></li>
-                    {data.assistant.chats.map(chat => {
-                        return (
-                            <li key={chat.id} className="py-2">
-                                <Link to={`/chats/${chat.id}`} className=" text-blue-700 mt-3">{chat.id}</Link>
-                            </li>
-                        );
-                    })}
-                </ol>
-            </div>
-
-            <div className="mt-5">
-                <h4 className="text-lg sm:text-xl font-medium">Export</h4>
-
-                <pre className="mt-5  truncate ...">
-                    {assistantExport}
-                </pre>
-
-                <button type="button" className="rounded-md bg-gray-400 px-4 py-3 mt-5 font-medium text-white hover:bg-gray-500" onClick={copy}>Copy</button>
+                <Outlet />
             </div>
         </div>
     );
