@@ -1,26 +1,12 @@
-import { useLoaderData } from "@remix-run/react";
-import type { LoaderArgs } from "@remix-run/server-runtime";
-import { json } from "@remix-run/server-runtime";
 import React from "react";
 import invariant from "tiny-invariant";
-import { getAssistant } from "~/models/assistant.server";
-import { requireUserId } from "~/session.server";
-
-export async function loader({ request, params }: LoaderArgs) {
-    const userId = await requireUserId(request);
-    invariant(params.assistantId, "assistantId not found");
-
-    const assistant = await getAssistant({ userId, id: params.assistantId });
-
-    if (!assistant) {
-        throw new Response("Not Found", { status: 404 });
-    }
-
-    return json({ assistant });
-}
+import { useMatchesData } from "~/utils";
+import type { loader as parentLoader } from "~/routes/assistants.$assistantId";
 
 export default function AssistantDetailsExportPage() {
-    const data = useLoaderData<typeof loader>();
+    const data = useMatchesData<typeof parentLoader>("routes/assistants.$assistantId");
+
+    invariant(data, "Unable to load assistant data from parent route");
 
     const assistantExport = JSON.stringify({
         name: data.assistant.name,

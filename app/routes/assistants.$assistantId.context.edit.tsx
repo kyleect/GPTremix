@@ -1,12 +1,14 @@
 import type { AssistantContextMessage } from "@prisma/client";
-import { Form, useActionData, useLoaderData } from "@remix-run/react";
-import type { ActionArgs, LoaderArgs } from "@remix-run/server-runtime";
+import { Form, useActionData } from "@remix-run/react";
+import type { ActionArgs } from "@remix-run/server-runtime";
 import { redirect } from "@remix-run/server-runtime";
 import { json } from "@remix-run/server-runtime";
 import React from "react";
 import invariant from "tiny-invariant";
-import { getAssistant, updateAssistantContextMessages } from "~/models/assistant.server";
+import { updateAssistantContextMessages } from "~/models/assistant.server";
 import { requireUserId } from "~/session.server";
+import { useMatchesData } from "~/utils";
+import type { loader as parentLoader } from "~/routes/assistants.$assistantId";
 
 export async function action({ request, params }: ActionArgs) {
     const userId = await requireUserId(request);
@@ -66,29 +68,11 @@ export async function action({ request, params }: ActionArgs) {
     return redirect(`/assistants/${params.assistantId}/context`);
 }
 
-export async function loader({ request, params }: LoaderArgs) {
-    const userId = await requireUserId(request);
-    invariant(params.assistantId, "assistantId not found");
-
-    const assistant = await getAssistant({ userId, id: params.assistantId });
-
-    if (!assistant) {
-        throw new Response("Not Found", { status: 404 });
-    }
-
-    const messagesJson = assistant.contextMessages
-        .map(({ role, content }) => ({
-            role,
-            content
-        }))
-        .map(x => JSON.stringify(x))
-        .join("\n");
-
-    return json({ assistant, messagesJson });
-}
-
 export default function AssistantDetailsContextEditPage() {
-    const data = useLoaderData<typeof loader>();
+    const data = useMatchesData<typeof parentLoader>("routes/assistants.$assistantId");
+
+    invariant(data, "Unable to load assistant data from parent route");
+
     const actionData = useActionData<typeof action>();
     const contextRef = React.useRef<HTMLTextAreaElement>(null);
 
@@ -97,6 +81,14 @@ export default function AssistantDetailsContextEditPage() {
             contextRef.current?.focus();
         }
     }, [actionData]);
+
+    const messagesJson = data.assistant.contextMessages
+        .map(({ role, content }) => ({
+            role,
+            content
+        }))
+        .map(x => JSON.stringify(x))
+        .join("\n");
 
     return (
         <Form method="post">
@@ -109,7 +101,7 @@ export default function AssistantDetailsContextEditPage() {
                         className="w-full flex-1 rounded-md border-2 border-blue-500 px-3 py-2 leading-6"
                         aria-invalid={actionData?.errors?.context ? true : undefined}
                         placeholder={`{"role":"system","content":"You are a very helpful assistant!"}`}
-                        defaultValue={data.messagesJson}
+                        defaultValue={messagesJson}
                         aria-errormessage={
                             actionData?.errors?.context
                                 ? "context-error"

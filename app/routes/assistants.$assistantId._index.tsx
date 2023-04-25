@@ -1,9 +1,11 @@
 import { Form } from "@remix-run/react";
-import type { ActionArgs, LoaderArgs } from "@remix-run/server-runtime";
+import type { ActionArgs } from "@remix-run/server-runtime";
 import { redirect } from "@remix-run/server-runtime";
 import invariant from "tiny-invariant";
 import { deleteAssistant } from "~/models/assistant.server";
 import { requireUserId } from "~/session.server";
+import { useMatchesData } from "~/utils";
+import type { loader as parentLoader } from "~/routes/assistants.$assistantId";
 
 export async function action({ request, params }: ActionArgs) {
     const userId = await requireUserId(request);
@@ -24,16 +26,15 @@ export async function action({ request, params }: ActionArgs) {
     });
 }
 
-export async function loader({ request, params }: LoaderArgs) {
-    await requireUserId(request);
-    invariant(params.assistantId, "assistantId not found");
-
-    return null;
-}
-
 export default function AssistantDetailsIndexPage() {
+    const data = useMatchesData<typeof parentLoader>("routes/assistants.$assistantId");
+
+    invariant(data, "Unable to load assistant data from parent route");
+
     return (
         <>
+            <p>Chats: {data.assistant.chats.length}</p>
+            <p>Created: {data.assistant.createdAt}</p>
             <Form method="post" className="my-5" onSubmit={(event) => {
                 if (!confirm("Are you sure you want to delete this assistant?")) {
                     event.preventDefault();

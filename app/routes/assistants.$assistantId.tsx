@@ -33,34 +33,34 @@ export default function AssistantDetailsPage() {
         <div>
             <h3 className="text-xl sm:text-2xl font-bold">{data.assistant.name}</h3>
 
-            <ul className="my-5 flex justify-between">
-                <li>
+            <ul className="my-10 flex justify-between text-center">
+                <li className="grow">
                     <NavLink
-                        className={({ isActive }) => `${isActive ? "font-bold" : undefined} p-2`}
+                        className={({ isActive }) => `${isActive ? "font-bold bg-gray-500 text-white" : undefined} p-4 block`}
                         to={`/assistants/${data.assistant.id}`}
                         end>
                         Details
                     </NavLink>
                 </li>
-                <li>
+                <li className="grow">
                     <NavLink
-                        className={({ isActive }) => `${isActive ? "font-bold" : undefined} p-2`}
+                        className={({ isActive }) => `${isActive ? "font-bold bg-gray-500 text-white" : undefined} p-4 block`}
                         to={`/assistants/${data.assistant.id}/context`}
                     >
                         Context
                     </NavLink>
                 </li>
-                <li>
+                <li className="grow">
                     <NavLink
-                        className={({ isActive }) => `${isActive ? "font-bold" : undefined} p-2`}
+                        className={({ isActive }) => `${isActive ? "font-bold bg-gray-500 text-white" : undefined} p-4 block`}
                         to={`/assistants/${data.assistant.id}/chats`}
                         end>
                         Chats
                     </NavLink>
                 </li>
-                <li>
+                <li className="grow">
                     <NavLink
-                        className={({ isActive }) => `${isActive ? "font-bold" : undefined} p-2`}
+                        className={({ isActive }) => `${isActive ? "font-bold bg-gray-500 text-white" : undefined} p-4 block`}
                         to={`/assistants/${data.assistant.id}/export`}
                         end>
                         Export

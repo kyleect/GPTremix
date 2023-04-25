@@ -12,7 +12,7 @@ export function getAssistant({
     userId: User["id"];
 }) {
     return prisma.assistant.findFirst({
-        select: { id: true, name: true, chats: true, contextMessages: true },
+        select: { id: true, name: true, chats: true, contextMessages: true, createdAt: true },
         where: { id, userId },
     });
 }
