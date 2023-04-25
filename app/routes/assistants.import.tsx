@@ -1,3 +1,4 @@
+import type { AssistantContextMessage } from "@prisma/client";
 import type { ActionArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { Form, useActionData } from "@remix-run/react";
@@ -37,7 +38,41 @@ export async function action({ request }: ActionArgs) {
             );
         }
 
-        const assistant = await createAssistant({ userId, name: importForAssistant.name, prompt: importForAssistant.prompt });
+        let contextMessages: Pick<AssistantContextMessage, "role" | "content">[] = [];
+
+        const { messages } = importForAssistant;
+
+        if (Array.isArray(messages)) {
+            const errors: string[] = [];
+
+            messages.forEach((message, i) => {
+                const { role, content } = message;
+
+                if (typeof role !== "string" || role.length === 0) {
+                    errors.push(`[${i}]: role required to be a non empty string`);
+                }
+
+                if (typeof content !== "string" || content.length === 0) {
+                    errors.push(`[${i}]: content required to be a non empty string`);
+                }
+            });
+
+            if (errors.length > 0) {
+                return json(
+                    { errors: { import: errors.join(', ') } },
+                    { status: 400 }
+                );
+            }
+
+            contextMessages = messages;
+        }
+
+        const assistant = await createAssistant({
+            userId,
+            name: importForAssistant.name as string,
+            prompt: importForAssistant.prompt as string,
+            messages: contextMessages
+        });
 
         return redirect(`/assistants/${assistant.id}`);
     } catch (e) {

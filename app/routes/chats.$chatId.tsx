@@ -14,6 +14,7 @@ import type { ChatCompletionRequestMessage } from "openai";
 import { Configuration, OpenAIApi } from "openai";
 import React from "react";
 import invariant from "tiny-invariant";
+import { getAssistant } from "~/models/assistant.server";
 
 import { addMessage, getChat } from "~/models/chat.server";
 import { requireUser, requireUserId } from "~/session.server";
@@ -25,10 +26,16 @@ export async function loader({ request, params }: LoaderArgs) {
   const chat = await getChat({ userId, id: params.chatId });
 
   if (!chat) {
-    throw new Response("Not Found", { status: 404 });
+    throw new Response("Chat Not Found", { status: 404 });
   }
 
-  return json({ chat });
+  const assistant = await getAssistant({ userId, id: chat?.assistant.id });
+
+  if (!assistant) {
+    throw new Response("Assistant For Not Found", { status: 404 });
+  }
+
+  return json({ chat, assistant });
 }
 
 export async function action({ request, params }: ActionArgs) {
@@ -40,6 +47,9 @@ export async function action({ request, params }: ActionArgs) {
   const chat = await getChat({ userId: user.id, id: params.chatId });
   invariant(chat, `Chat was not found with id ${params.chatId}`);
 
+  const assistant = await getAssistant({ userId: user.id, id: chat.assistant.id });
+  invariant(assistant, `Assistant was not found with id ${chat.assistant.id} for chat ${chat.id}`);
+
   const formData = await request.formData();
 
   const userInput = formData.get("userInput");
@@ -49,6 +59,14 @@ export async function action({ request, params }: ActionArgs) {
       { status: 400 }
     );
   }
+
+  const assistantContext = assistant.contextMessages.map(
+    ({ role, content }) =>
+    ({
+      role,
+      content,
+    } as ChatCompletionRequestMessage)
+  );
 
   const messageHistory = chat.messages.map(
     ({ role, content }) =>
@@ -70,6 +88,7 @@ export async function action({ request, params }: ActionArgs) {
         role: "system",
         content: chat.assistant.prompt,
       },
+      ...assistantContext,
       ...messageHistory,
       {
         role: "user",
@@ -116,6 +135,34 @@ export default function ChatDetailsPage() {
     <div>
       {data.chat.messages.length > 0 && (
         <ol>
+          <li className={`p-5 border mb-4 border-gray-500 rounded-md bg-gray-300`}>
+            <div className="font-bold capitalize">
+              system
+            </div>{" "}
+            <div>
+              <pre className="whitespace-pre-wrap font-sans mt-2">
+                {data.chat.assistant.prompt}
+              </pre>
+
+              <p className="text-right text-xs sm:text-sm pt-5" title="This message is part of the assistant's context">Context</p>
+            </div>
+          </li>
+          {data.assistant.contextMessages.map(message => {
+            return (
+              <li key={message.id} className={`p-5 border mb-4 border-gray-500 rounded-md ${message.role === "user" ? "bg-gray-200" : "bg-gray-300"}`}>
+                <div className="font-bold capitalize">
+                  {message.role === "assistant" ? <Link to={`/assistants/${data.chat.assistant.id}`} className="text-blue-700">{data.chat.assistant.name}</Link> : message.role}
+                </div>{" "}
+                <div>
+                  <pre className="whitespace-pre-wrap font-sans mt-2">
+                    {message.content}
+                  </pre>
+
+                  <p className="text-right text-xs sm:text-sm pt-5" title="This message is part of the assistant's context">Context</p>
+                </div>
+              </li>
+            );
+          })}
           {data.chat.messages.map((message) => {
             return (
               <li key={message.id} className={`p-5 border mb-4 border-gray-300 rounded-md ${message.role === "user" ? "bg-white" : "bg-gray-100"}`}>

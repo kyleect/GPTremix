@@ -48,9 +48,23 @@ model Assistant {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId String
 
-  chats Chat[]
+  chats           Chat[]
+  contextMessages AssistantContextMessage[]
 
   @@unique([userId, name])
+}
+
+model AssistantContextMessage {
+  id String @id @default(cuid())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  role    String
+  content String
+
+  assistant   Assistant @relation(fields: [assistantId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  assistantId String
 }
 
 model Chat {

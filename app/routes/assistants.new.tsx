@@ -1,3 +1,4 @@
+import type { AssistantContextMessage } from "@prisma/client";
 import type { ActionArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { Form, Link, useActionData } from "@remix-run/react";
@@ -13,29 +14,79 @@ export async function action({ request }: ActionArgs) {
 
     const name = formData.get("name");
     const prompt = formData.get("prompt");
+    const context = formData.get("context");
 
     if (typeof name !== "string" || name.length === 0) {
         return json(
-            { errors: { name: "Name is required", prompt: null } },
+            { errors: { name: "Name is required", prompt: null, context: null } },
             { status: 400 }
         );
     }
 
     if (typeof prompt !== "string" || prompt.length === 0) {
         return json(
-            { errors: { name: null, prompt: "Prompt is required" } },
+            { errors: { name: null, prompt: "Prompt is required", context: null } },
             { status: 400 }
         );
     }
 
+    const contextMessages: Pick<AssistantContextMessage, "role" | "content">[] = [];
+
+    console.log(JSON.stringify(context));
+
+    if (typeof context === "string" && context.length > 0) {
+        const messagesJson = context.split("\n");
+
+        console.log(JSON.stringify(messagesJson));
+
+        const messageErrors: string[] = [];
+
+        messagesJson.forEach((messageJson, i) => {
+            try {
+                const message = JSON.parse(messageJson);
+
+                if (Array.isArray(message) || Number.isInteger(message) || typeof message === "boolean") {
+                    messageErrors.push(`[${i}]: object required with "role" and "content" properties`);
+                    return;
+                }
+
+                const { role, content } = message;
+
+                if (typeof role !== "string" || role.length === 0) {
+                    messageErrors.push(`[${i}]: role required to be a non empty string`);
+                }
+
+                if (typeof content !== "string" || content.length === 0) {
+                    messageErrors.push(`[${i}]: content required to be a non empty string`);
+                }
+
+                contextMessages.push(message);
+            } catch (e) {
+                if (e instanceof SyntaxError) {
+                    messageErrors.push(`[${i}]: unable to parse as json`);
+                    return;
+                }
+
+                messageErrors.push(`[${i}]: unknown issue`);
+            }
+        });
+
+        if (messageErrors.length > 0) {
+            return json(
+                { errors: { name: null, prompt: null, context: messageErrors } },
+                { status: 400 }
+            );
+        }
+    }
+
     try {
-        const assistant = await createAssistant({ userId, name, prompt });
+        const assistant = await createAssistant({ userId, name, prompt, messages: contextMessages });
 
         return redirect(`/assistants/${assistant.id}`);
     } catch (e) {
         if (e instanceof Error && e.message.includes("Unique constraint failed on the fields")) {
             return json(
-                { errors: { name: `Assistant names must be unique!`, prompt: null } },
+                { errors: { name: `Assistant names must be unique!`, prompt: null, context: null } },
                 { status: 400 }
             );
         }
@@ -48,12 +99,15 @@ export default function NewAssistantPage() {
     const actionData = useActionData<typeof action>();
     const nameRef = React.useRef<HTMLInputElement>(null);
     const promptRef = React.useRef<HTMLTextAreaElement>(null);
+    const contextRef = React.useRef<HTMLTextAreaElement>(null);
 
     React.useEffect(() => {
         if (actionData?.errors?.name) {
             nameRef.current?.focus();
         } else if (actionData?.errors?.prompt) {
             promptRef.current?.focus();
+        } else if (actionData?.errors?.context) {
+            contextRef.current?.focus();
         }
     }, [actionData]);
 
@@ -110,6 +164,30 @@ export default function NewAssistantPage() {
                 {actionData?.errors?.prompt && (
                     <div className="pt-1 text-red-700" id="prompt-error">
                         {actionData.errors.prompt}
+                    </div>
+                )}
+            </div>
+
+            <div>
+                <label className="flex w-full flex-col gap-1">
+                    <span>Context: </span>
+                    <textarea
+                        ref={contextRef}
+                        name="context"
+                        rows={8}
+                        className="w-full flex-1 rounded-md border-2 border-blue-500 px-3 py-2 leading-6"
+                        aria-invalid={actionData?.errors?.context ? true : undefined}
+                        placeholder={`{"role":"user", "content":"What is your favorite color?"}\n{"role":"assistant", "content":"Blue"}`}
+                        aria-errormessage={
+                            actionData?.errors?.context
+                                ? "context-error"
+                                : undefined
+                        }
+                    />
+                </label>
+                {actionData?.errors?.context && (
+                    <div className="pt-1 text-red-700" id="context-error">
+                        {actionData.errors.context.join(", ")}
                     </div>
                 )}
             </div>

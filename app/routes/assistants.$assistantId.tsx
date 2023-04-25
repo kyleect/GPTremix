@@ -28,7 +28,11 @@ export async function loader({ request, params }: LoaderArgs) {
 export default function AssistantDetailsPage() {
     const data = useLoaderData<typeof loader>();
 
-    const assistantExport = JSON.stringify({ name: data.assistant.name, prompt: data.assistant.prompt });
+    const assistantExport = JSON.stringify({
+        name: data.assistant.name,
+        prompt: data.assistant.prompt,
+        messages: data.assistant.contextMessages.map(({ role, content }) => ({ role, content }))
+    });
 
     const copy = React.useCallback(() => {
         navigator.clipboard.writeText(assistantExport);
