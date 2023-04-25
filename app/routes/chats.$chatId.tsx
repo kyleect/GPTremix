@@ -2,18 +2,17 @@ import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import {
   Form,
-  Link,
   isRouteErrorResponse,
   useActionData,
   useLoaderData,
   useNavigation,
   useRouteError,
 } from "@remix-run/react";
-import { formatRelative } from "date-fns";
 import type { ChatCompletionRequestMessage } from "openai";
 import { Configuration, OpenAIApi } from "openai";
 import React from "react";
 import invariant from "tiny-invariant";
+import { AssistantChatMessage, ContextChatMessage, UserChatMessage } from "~/components/ChatMessage";
 import { getAssistant } from "~/models/assistant.server";
 
 import { addMessage, getChat } from "~/models/chat.server";
@@ -131,38 +130,30 @@ export default function ChatDetailsPage() {
     <div>
       {data.chat.messages.length > 0 && (
         <ol>
-          {data.assistant.contextMessages.map(message => {
-            return (
-              <li key={message.id} className={`p-5 border mb-4 border-gray-500 rounded-md ${message.role === "user" ? "bg-gray-200" : "bg-gray-300"}`}>
-                <div className="font-bold capitalize">
-                  {message.role === "assistant" ? <Link to={`/assistants/${data.chat.assistant.id}`} className="text-blue-700">{data.chat.assistant.name}</Link> : message.role}
-                </div>{" "}
-                <div>
-                  <pre className="whitespace-pre-wrap font-sans mt-2">
-                    {message.content}
-                  </pre>
-
-                  <p className="text-right text-xs sm:text-sm pt-5" title="This message is part of the assistant's context">Context</p>
-                </div>
-              </li>
-            );
-          })}
-          {data.chat.messages.map((message) => {
-            return (
-              <li key={message.id} className={`p-5 border mb-4 border-gray-300 rounded-md ${message.role === "user" ? "bg-white" : "bg-gray-100"}`}>
-                <div className="font-bold capitalize">
-                  {message.role === "assistant" ? <Link to={`/assistants/${data.chat.assistant.id}`} className="text-blue-700">{data.chat.assistant.name}</Link> : message.role}
-                </div>{" "}
-                <div>
-                  <pre className="whitespace-pre-wrap font-sans mt-2">
-                    {message.content}
-                  </pre>
-
-                  <p className="text-right text-xs sm:text-sm pt-5">{formatRelative(new Date(message.createdAt), new Date())}</p>
-                </div>
-              </li>
-            );
-          })}
+          {data.assistant.contextMessages.map((message) => (
+            <li key={message.id}>
+              <ContextChatMessage
+                authorOrRole={message.role}
+                content={message.content}
+              />
+            </li>
+          ))}
+          {data.chat.messages.map((message) => (
+            <li key={message.id}>
+              {message.role === "user"
+                ? <UserChatMessage
+                  content={message.content}
+                  createdAt={message.createdAt}
+                />
+                : <AssistantChatMessage
+                  content={message.content}
+                  createdAt={message.createdAt}
+                  assistantId={data.assistant.id}
+                  assistantName={data.assistant.name}
+                />
+              }
+            </li>
+          ))}
         </ol>
       )}
 

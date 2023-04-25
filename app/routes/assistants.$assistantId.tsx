@@ -8,6 +8,7 @@ import {
 } from "@remix-run/react";
 import React from "react";
 import invariant from "tiny-invariant";
+import { ContextChatMessage } from "~/components/ChatMessage";
 import { getAssistant } from "~/models/assistant.server";
 
 import { requireUserId } from "~/session.server";
@@ -41,11 +42,23 @@ export default function AssistantDetailsPage() {
         <div>
             <h3 className="text-xl sm:text-2xl font-bold">{data.assistant.name}</h3>
 
-            <ol>
-                {data.assistant.contextMessages.map((contextMessage, i) => {
-                    return <li key={i}>{contextMessage.role}: {contextMessage.content}</li>
-                })}
-            </ol>
+            <div className="my-5">
+                <h4 className="text-lg sm:text-xl font-medium mb-5">Context</h4>
+
+                <ol>
+                    {data.assistant.contextMessages.map((contextMessage, i) => {
+                        return (
+                            <li key={i}>
+                                <ContextChatMessage
+                                    authorOrRole={contextMessage.role}
+                                    content={contextMessage.content}
+                                />
+                            </li>
+                        )
+                    })}
+                </ol>
+            </div>
+
 
             <div className="mt-5">
                 <h4 className="text-lg sm:text-xl font-medium">Chats</h4>
