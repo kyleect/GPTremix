@@ -1,6 +1,8 @@
-import type { LoaderArgs } from "@remix-run/node";
+import { ActionArgs, LoaderArgs, Response } from "@remix-run/node";
+import { redirect } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import {
+    Form,
     Link,
     isRouteErrorResponse,
     useLoaderData,
@@ -9,9 +11,28 @@ import {
 import React from "react";
 import invariant from "tiny-invariant";
 import { ContextChatMessage } from "~/components/ChatMessage";
-import { getAssistant } from "~/models/assistant.server";
+import { deleteAssistant, getAssistant } from "~/models/assistant.server";
 
 import { requireUserId } from "~/session.server";
+
+export async function action({ request, params }: ActionArgs) {
+    const userId = await requireUserId(request);
+    invariant(params.assistantId, "assistantId not found");
+
+    const formData = await request.formData();
+
+    const intent = formData.get("intent");
+
+    if (intent === "delete") {
+        await deleteAssistant({ userId, id: params.assistantId });
+
+        return redirect("/assistants");
+    }
+
+    return new Response(null, {
+        status: 404
+    });
+}
 
 export async function loader({ request, params }: LoaderArgs) {
     const userId = await requireUserId(request);
@@ -41,6 +62,10 @@ export default function AssistantDetailsPage() {
     return (
         <div>
             <h3 className="text-xl sm:text-2xl font-bold">{data.assistant.name}</h3>
+
+            <Form method="post" className="mt-5">
+                <button name="intent" value="delete" className="rounded-md bg-gray-400 px-4 py-3 font-medium text-white hover:bg-gray-500">Delete</button>
+            </Form>
 
             <div className="my-5">
                 <h4 className="text-lg sm:text-xl font-medium mb-5">Context</h4>
