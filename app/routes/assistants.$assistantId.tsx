@@ -85,6 +85,19 @@ export default function AssistantDetailsPage() {
             Export
           </NavLink>
         </li>
+        <li className="grow">
+          <NavLink
+            className={({ isActive }) =>
+              `${
+                isActive ? "bg-gray-500 font-bold text-white" : undefined
+              } block p-4`
+            }
+            to={`/assistants/${data.assistant.id}/fork`}
+            end
+          >
+            Fork
+          </NavLink>
+        </li>
       </ul>
 
       <div className="my-5">
