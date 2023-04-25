@@ -2,11 +2,11 @@ import type { LoaderArgs } from "@remix-run/node";
 import { Response } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import {
-    NavLink,
-    Outlet,
-    isRouteErrorResponse,
-    useLoaderData,
-    useRouteError,
+  NavLink,
+  Outlet,
+  isRouteErrorResponse,
+  useLoaderData,
+  useRouteError,
 } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { getAssistant } from "~/models/assistant.server";
@@ -14,81 +14,100 @@ import { getAssistant } from "~/models/assistant.server";
 import { requireUserId } from "~/session.server";
 
 export async function loader({ request, params }: LoaderArgs) {
-    const userId = await requireUserId(request);
-    invariant(params.assistantId, "assistantId not found");
+  const userId = await requireUserId(request);
+  invariant(params.assistantId, "assistantId not found");
 
-    const assistant = await getAssistant({ userId, id: params.assistantId });
+  const assistant = await getAssistant({ userId, id: params.assistantId });
 
-    if (!assistant) {
-        throw new Response("Not Found", { status: 404 });
-    }
+  if (!assistant) {
+    throw new Response("Not Found", { status: 404 });
+  }
 
-    return json({ assistant });
+  return json({ assistant });
 }
 
 export default function AssistantDetailsPage() {
-    const data = useLoaderData<typeof loader>();
+  const data = useLoaderData<typeof loader>();
 
-    return (
-        <div>
-            <h3 className="text-xl sm:text-2xl font-bold">{data.assistant.name}</h3>
+  return (
+    <div>
+      <h3 className="text-xl font-bold sm:text-2xl">{data.assistant.name}</h3>
 
-            <ul className="my-10 flex justify-between text-center">
-                <li className="grow">
-                    <NavLink
-                        className={({ isActive }) => `${isActive ? "font-bold bg-gray-500 text-white" : undefined} p-4 block`}
-                        to={`/assistants/${data.assistant.id}`}
-                        end>
-                        Details
-                    </NavLink>
-                </li>
-                <li className="grow">
-                    <NavLink
-                        className={({ isActive }) => `${isActive ? "font-bold bg-gray-500 text-white" : undefined} p-4 block`}
-                        to={`/assistants/${data.assistant.id}/context`}
-                    >
-                        Context
-                    </NavLink>
-                </li>
-                <li className="grow">
-                    <NavLink
-                        className={({ isActive }) => `${isActive ? "font-bold bg-gray-500 text-white" : undefined} p-4 block`}
-                        to={`/assistants/${data.assistant.id}/chats`}
-                        end>
-                        Chats
-                    </NavLink>
-                </li>
-                <li className="grow">
-                    <NavLink
-                        className={({ isActive }) => `${isActive ? "font-bold bg-gray-500 text-white" : undefined} p-4 block`}
-                        to={`/assistants/${data.assistant.id}/export`}
-                        end>
-                        Export
-                    </NavLink>
-                </li>
-            </ul>
+      <ul className="my-10 flex justify-between text-center">
+        <li className="grow">
+          <NavLink
+            className={({ isActive }) =>
+              `${
+                isActive ? "bg-gray-500 font-bold text-white" : undefined
+              } block p-4`
+            }
+            to={`/assistants/${data.assistant.id}`}
+            end
+          >
+            Details
+          </NavLink>
+        </li>
+        <li className="grow">
+          <NavLink
+            className={({ isActive }) =>
+              `${
+                isActive ? "bg-gray-500 font-bold text-white" : undefined
+              } block p-4`
+            }
+            to={`/assistants/${data.assistant.id}/context`}
+          >
+            Context
+          </NavLink>
+        </li>
+        <li className="grow">
+          <NavLink
+            className={({ isActive }) =>
+              `${
+                isActive ? "bg-gray-500 font-bold text-white" : undefined
+              } block p-4`
+            }
+            to={`/assistants/${data.assistant.id}/chats`}
+            end
+          >
+            Chats
+          </NavLink>
+        </li>
+        <li className="grow">
+          <NavLink
+            className={({ isActive }) =>
+              `${
+                isActive ? "bg-gray-500 font-bold text-white" : undefined
+              } block p-4`
+            }
+            to={`/assistants/${data.assistant.id}/export`}
+            end
+          >
+            Export
+          </NavLink>
+        </li>
+      </ul>
 
-            <div className="my-5">
-                <Outlet />
-            </div>
-        </div>
-    );
+      <div className="my-5">
+        <Outlet />
+      </div>
+    </div>
+  );
 }
 
 export function ErrorBoundary() {
-    const error = useRouteError();
+  const error = useRouteError();
 
-    if (error instanceof Error) {
-        return <div>An unexpected error occurred: {error.message}</div>;
-    }
+  if (error instanceof Error) {
+    return <div>An unexpected error occurred: {error.message}</div>;
+  }
 
-    if (!isRouteErrorResponse(error)) {
-        return <h1>Unknown Error</h1>;
-    }
+  if (!isRouteErrorResponse(error)) {
+    return <h1>Unknown Error</h1>;
+  }
 
-    if (error.status === 404) {
-        return <div>Assistant not found</div>;
-    }
+  if (error.status === 404) {
+    return <div>Assistant not found</div>;
+  }
 
-    return <div>An unexpected error occurred: {error.statusText}</div>;
+  return <div>An unexpected error occurred: {error.statusText}</div>;
 }

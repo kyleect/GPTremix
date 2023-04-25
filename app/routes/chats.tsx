@@ -22,7 +22,7 @@ export default function ChatsPage() {
       <LoggedInHeader />
 
       <main className="flex h-full bg-white text-sm sm:text-base">
-        <div className="h-full w-3/12 lg:w-2/12  border-r bg-gray-50">
+        <div className="h-full w-3/12 border-r  bg-gray-50 lg:w-2/12">
           <Link to="new" className="block p-4 text-blue-500">
             + New Chat
           </Link>
@@ -37,7 +37,8 @@ export default function ChatsPage() {
                 <li key={chat.id}>
                   <NavLink
                     className={({ isActive }) =>
-                      `block overflow-hidden text-ellipsis border-b p-4 ${isActive ? "bg-white" : ""
+                      `block overflow-hidden text-ellipsis border-b p-4 ${
+                        isActive ? "bg-white" : ""
                       }`
                     }
                     to={chat.id}
@@ -50,7 +51,7 @@ export default function ChatsPage() {
           )}
         </div>
 
-        <div className="w-9/12 lg:w-10/12 flex-1 p-6">
+        <div className="w-9/12 flex-1 p-6 lg:w-10/12">
           <Outlet />
         </div>
       </main>

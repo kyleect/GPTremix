@@ -24,9 +24,13 @@ export function getChatListItems({ userId }: { userId: User["id"] }) {
   });
 }
 
-export function createChat(
-  { userId, assistantId }: { userId: User["id"], assistantId: Assistant["id"] }
-) {
+export function createChat({
+  userId,
+  assistantId,
+}: {
+  userId: User["id"];
+  assistantId: Assistant["id"];
+}) {
   return prisma.chat.create({
     data: {
       user: {
@@ -36,9 +40,9 @@ export function createChat(
       },
       assistant: {
         connect: {
-          id: assistantId
-        }
-      }
+          id: assistantId,
+        },
+      },
     },
   });
 }
@@ -46,7 +50,7 @@ export function createChat(
 export function addMessage({
   chatId,
   role,
-  content
+  content,
 }: {
   chatId: Chat["id"];
   role: Message["role"];
@@ -72,7 +76,7 @@ export function getChatMessages({ chatId }: { chatId: Chat["id"] }) {
     },
     select: {
       role: true,
-      content: true
+      content: true,
     },
   });
 }

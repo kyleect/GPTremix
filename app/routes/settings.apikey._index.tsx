@@ -1,5 +1,9 @@
 import { Link } from "@remix-run/react";
 
 export default function SettingsApiKeyIndexPage() {
-    return <Link to="edit" className="font-medium text-blue-700 mt-3">Edit</Link>
+  return (
+    <Link to="edit" className="mt-3 font-medium text-blue-700">
+      Edit
+    </Link>
+  );
 }

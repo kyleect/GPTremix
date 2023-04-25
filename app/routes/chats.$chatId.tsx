@@ -13,7 +13,11 @@ import type { ChatCompletionRequestMessage } from "openai";
 import { Configuration, OpenAIApi } from "openai";
 import React from "react";
 import invariant from "tiny-invariant";
-import { AssistantChatMessage, ContextChatMessage, UserChatMessage } from "~/components/ChatMessage";
+import {
+  AssistantChatMessage,
+  ContextChatMessage,
+  UserChatMessage,
+} from "~/components/ChatMessage";
 import { getAssistant } from "~/models/assistant.server";
 
 import { addMessage, deleteChat, getChat } from "~/models/chat.server";
@@ -54,11 +58,17 @@ export async function action({ request, params }: ActionArgs) {
   if (intent === "delete") {
     await deleteChat({ id: chat.id, userId: user.id });
 
-    return redirect('/chats');
+    return redirect("/chats");
   }
 
-  const assistant = await getAssistant({ userId: user.id, id: chat.assistant.id });
-  invariant(assistant, `Assistant was not found with id ${chat.assistant.id} for chat ${chat.id}`);
+  const assistant = await getAssistant({
+    userId: user.id,
+    id: chat.assistant.id,
+  });
+  invariant(
+    assistant,
+    `Assistant was not found with id ${chat.assistant.id} for chat ${chat.id}`
+  );
 
   const userInput = formData.get("userInput");
   if (typeof userInput !== "string" || userInput.length === 0) {
@@ -70,18 +80,18 @@ export async function action({ request, params }: ActionArgs) {
 
   const assistantContext = assistant.contextMessages.map(
     ({ role, content }) =>
-    ({
-      role,
-      content,
-    } as ChatCompletionRequestMessage)
+      ({
+        role,
+        content,
+      } as ChatCompletionRequestMessage)
   );
 
   const messageHistory = chat.messages.map(
     ({ role, content }) =>
-    ({
-      role,
-      content,
-    } as ChatCompletionRequestMessage)
+      ({
+        role,
+        content,
+      } as ChatCompletionRequestMessage)
   );
 
   const conf = new Configuration({
@@ -109,13 +119,13 @@ export async function action({ request, params }: ActionArgs) {
   await addMessage({
     chatId: chat.id,
     role: "user",
-    content: userInput
+    content: userInput,
   });
 
   await addMessage({
     chatId: params.chatId,
     role: "assistant",
-    content: response?.content
+    content: response?.content,
   });
 
   return json({ errors: null });
@@ -149,18 +159,19 @@ export default function ChatDetailsPage() {
           ))}
           {data.chat.messages.map((message) => (
             <li key={message.id}>
-              {message.role === "user"
-                ? <UserChatMessage
+              {message.role === "user" ? (
+                <UserChatMessage
                   content={message.content}
                   createdAt={message.createdAt}
                 />
-                : <AssistantChatMessage
+              ) : (
+                <AssistantChatMessage
                   content={message.content}
                   createdAt={message.createdAt}
                   assistantId={data.assistant.id}
                   assistantName={data.assistant.name}
                 />
-              }
+              )}
             </li>
           ))}
         </ol>
@@ -205,7 +216,8 @@ export default function ChatDetailsPage() {
             form="delete-form"
             name="intent"
             value="delete"
-            className="rounded bg-gray-400 px-4 py-2  text-white hover:bg-gray-500">
+            className="rounded bg-gray-400 px-4 py-2  text-white hover:bg-gray-500"
+          >
             Delete
           </button>
         </div>
@@ -213,11 +225,16 @@ export default function ChatDetailsPage() {
 
       <Form method="post" replace className="mt-4" id="submit-form" />
 
-      <Form method="post" className="mt-5" onSubmit={(event) => {
-        if (!confirm("Are you sure you want to delete this chat?")) {
-          event.preventDefault();
-        }
-      }} id="delete-form" />
+      <Form
+        method="post"
+        className="mt-5"
+        onSubmit={(event) => {
+          if (!confirm("Are you sure you want to delete this chat?")) {
+            event.preventDefault();
+          }
+        }}
+        id="delete-form"
+      />
     </div>
   );
 }

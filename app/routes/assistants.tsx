@@ -9,51 +9,52 @@ import { requireUserId } from "~/session.server";
 export const meta: V2_MetaFunction = () => [{ title: "GPTremix" }];
 
 export async function loader({ request }: LoaderArgs) {
-    const userId = await requireUserId(request);
-    const assistants = await getAssistants({ userId });
-    return json({ assistants });
+  const userId = await requireUserId(request);
+  const assistants = await getAssistants({ userId });
+  return json({ assistants });
 }
 
 export default function AssistantsPage() {
-    const data = useLoaderData<typeof loader>();
+  const data = useLoaderData<typeof loader>();
 
-    return (
-        <div className="flex h-full min-h-screen flex-col">
-            <LoggedInHeader />
+  return (
+    <div className="flex h-full min-h-screen flex-col">
+      <LoggedInHeader />
 
-            <main className="flex h-full bg-white text-sm sm:text-base">
-                <div className="h-full w-3/12 lg:w-2/12 border-r bg-gray-50">
-                    <Link to="new" className="block p-4 text-blue-500">
-                        + New Assistant
-                    </Link>
+      <main className="flex h-full bg-white text-sm sm:text-base">
+        <div className="h-full w-3/12 border-r bg-gray-50 lg:w-2/12">
+          <Link to="new" className="block p-4 text-blue-500">
+            + New Assistant
+          </Link>
 
-                    <hr />
+          <hr />
 
-                    {data.assistants.length === 0 ? (
-                        <p className="p-4">No assistants yet</p>
-                    ) : (
-                        <ol>
-                            {data.assistants.map((assistant) => (
-                                <li key={assistant.id}>
-                                    <NavLink
-                                        className={({ isActive }) =>
-                                            `block overflow-hidden text-ellipsis border-b p-4 ${isActive ? "bg-white" : ""
-                                            }`
-                                        }
-                                        to={assistant.id}
-                                    >
-                                        🤖&nbsp;{assistant.name}
-                                    </NavLink>
-                                </li>
-                            ))}
-                        </ol>
-                    )}
-                </div>
-
-                <div className="w-9/12 lg:w-10/12 flex-1 p-6">
-                    <Outlet />
-                </div>
-            </main>
+          {data.assistants.length === 0 ? (
+            <p className="p-4">No assistants yet</p>
+          ) : (
+            <ol>
+              {data.assistants.map((assistant) => (
+                <li key={assistant.id}>
+                  <NavLink
+                    className={({ isActive }) =>
+                      `block overflow-hidden text-ellipsis border-b p-4 ${
+                        isActive ? "bg-white" : ""
+                      }`
+                    }
+                    to={assistant.id}
+                  >
+                    🤖&nbsp;{assistant.name}
+                  </NavLink>
+                </li>
+              ))}
+            </ol>
+          )}
         </div>
-    );
+
+        <div className="w-9/12 flex-1 p-6 lg:w-10/12">
+          <Outlet />
+        </div>
+      </main>
+    </div>
+  );
 }

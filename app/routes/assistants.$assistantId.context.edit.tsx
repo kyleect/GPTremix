@@ -11,119 +11,131 @@ import { useMatchesData } from "~/utils";
 import type { loader as parentLoader } from "~/routes/assistants.$assistantId";
 
 export async function action({ request, params }: ActionArgs) {
-    const userId = await requireUserId(request);
-    invariant(params.assistantId, "assistantId required but not defined");
+  const userId = await requireUserId(request);
+  invariant(params.assistantId, "assistantId required but not defined");
 
-    const formData = await request.formData();
+  const formData = await request.formData();
 
-    const context = formData.get("context");
+  const context = formData.get("context");
 
-    const contextMessages: Pick<AssistantContextMessage, "role" | "content">[] = [];
+  const contextMessages: Pick<AssistantContextMessage, "role" | "content">[] =
+    [];
 
-    if (typeof context === "string" && context.length > 0) {
-        const messagesJson = context.split("\n");
+  if (typeof context === "string" && context.length > 0) {
+    const messagesJson = context.split("\n");
 
-        const messageErrors: string[] = [];
+    const messageErrors: string[] = [];
 
-        messagesJson.forEach((messageJson, i) => {
-            try {
-                const message = JSON.parse(messageJson);
+    messagesJson.forEach((messageJson, i) => {
+      try {
+        const message = JSON.parse(messageJson);
 
-                if (Array.isArray(message) || Number.isInteger(message) || typeof message === "boolean") {
-                    messageErrors.push(`[${i}]: object required with "role" and "content" properties`);
-                    return;
-                }
-
-                const { role, content } = message;
-
-                if (typeof role !== "string" || role.length === 0) {
-                    messageErrors.push(`[${i}]: role required to be a non empty string`);
-                }
-
-                if (typeof content !== "string" || content.length === 0) {
-                    messageErrors.push(`[${i}]: content required to be a non empty string`);
-                }
-
-                contextMessages.push(message);
-            } catch (e) {
-                if (e instanceof SyntaxError) {
-                    messageErrors.push(`[${i}]: unable to parse as json`);
-                    return;
-                }
-
-                messageErrors.push(`[${i}]: unknown issue`);
-            }
-        });
-
-        if (messageErrors.length > 0) {
-            return json(
-                { errors: { name: null, context: messageErrors } },
-                { status: 400 }
-            );
+        if (
+          Array.isArray(message) ||
+          Number.isInteger(message) ||
+          typeof message === "boolean"
+        ) {
+          messageErrors.push(
+            `[${i}]: object required with "role" and "content" properties`
+          );
+          return;
         }
+
+        const { role, content } = message;
+
+        if (typeof role !== "string" || role.length === 0) {
+          messageErrors.push(`[${i}]: role required to be a non empty string`);
+        }
+
+        if (typeof content !== "string" || content.length === 0) {
+          messageErrors.push(
+            `[${i}]: content required to be a non empty string`
+          );
+        }
+
+        contextMessages.push(message);
+      } catch (e) {
+        if (e instanceof SyntaxError) {
+          messageErrors.push(`[${i}]: unable to parse as json`);
+          return;
+        }
+
+        messageErrors.push(`[${i}]: unknown issue`);
+      }
+    });
+
+    if (messageErrors.length > 0) {
+      return json(
+        { errors: { name: null, context: messageErrors } },
+        { status: 400 }
+      );
     }
+  }
 
-    await updateAssistantContextMessages({ id: params.assistantId, userId }, contextMessages);
+  await updateAssistantContextMessages(
+    { id: params.assistantId, userId },
+    contextMessages
+  );
 
-    return redirect(`/assistants/${params.assistantId}/context`);
+  return redirect(`/assistants/${params.assistantId}/context`);
 }
 
 export default function AssistantDetailsContextEditPage() {
-    const data = useMatchesData<typeof parentLoader>("routes/assistants.$assistantId");
+  const data = useMatchesData<typeof parentLoader>(
+    "routes/assistants.$assistantId"
+  );
 
-    invariant(data, "Unable to load assistant data from parent route");
+  invariant(data, "Unable to load assistant data from parent route");
 
-    const actionData = useActionData<typeof action>();
-    const contextRef = React.useRef<HTMLTextAreaElement>(null);
+  const actionData = useActionData<typeof action>();
+  const contextRef = React.useRef<HTMLTextAreaElement>(null);
 
-    React.useEffect(() => {
-        if (actionData?.errors?.context) {
-            contextRef.current?.focus();
-        }
-    }, [actionData]);
+  React.useEffect(() => {
+    if (actionData?.errors?.context) {
+      contextRef.current?.focus();
+    }
+  }, [actionData]);
 
-    const messagesJson = data.assistant.contextMessages
-        .map(({ role, content }) => ({
-            role,
-            content
-        }))
-        .map(x => JSON.stringify(x))
-        .join("\n");
+  const messagesJson = data.assistant.contextMessages
+    .map(({ role, content }) => ({
+      role,
+      content,
+    }))
+    .map((x) => JSON.stringify(x))
+    .join("\n");
 
-    return (
-        <Form method="post">
-            <div>
-                <label className="flex w-full flex-col gap-1">
-                    <textarea
-                        ref={contextRef}
-                        name="context"
-                        rows={8}
-                        className="w-full flex-1 rounded-md border-2 border-blue-500 px-3 py-2 leading-6"
-                        aria-invalid={actionData?.errors?.context ? true : undefined}
-                        placeholder={`{"role":"system","content":"You are a very helpful assistant!"}`}
-                        defaultValue={messagesJson}
-                        aria-errormessage={
-                            actionData?.errors?.context
-                                ? "context-error"
-                                : undefined
-                        }
-                    />
-                </label>
-                {actionData?.errors?.context && (
-                    <div className="pt-1 text-red-700" id="context-error">
-                        {actionData.errors.context.join(", ")}
-                    </div>
-                )}
-            </div>
+  return (
+    <Form method="post">
+      <div>
+        <label className="flex w-full flex-col gap-1">
+          <textarea
+            ref={contextRef}
+            name="context"
+            rows={8}
+            className="w-full flex-1 rounded-md border-2 border-blue-500 px-3 py-2 leading-6"
+            aria-invalid={actionData?.errors?.context ? true : undefined}
+            placeholder={`{"role":"system","content":"You are a very helpful assistant!"}`}
+            defaultValue={messagesJson}
+            aria-errormessage={
+              actionData?.errors?.context ? "context-error" : undefined
+            }
+          />
+        </label>
+        {actionData?.errors?.context && (
+          <div className="pt-1 text-red-700" id="context-error">
+            {actionData.errors.context.join(", ")}
+          </div>
+        )}
+      </div>
 
-            <div className="py-5">
-                <button
-                    type="submit"
-                    className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400"
-                >
-                    Save
-                </button>
-            </div>
-        </Form>
-    );
+      <div className="py-5">
+        <button
+          type="submit"
+          className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400"
+        >
+          Save
+        </button>
+      </div>
+    </Form>
+  );
 }

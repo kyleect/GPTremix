@@ -4,20 +4,22 @@ import { json } from "@remix-run/server-runtime";
 import { requireUser } from "~/session.server";
 
 export async function loader({ request }: LoaderArgs) {
-    const user = await requireUser(request);
+  const user = await requireUser(request);
 
-    return json({ user });
+  return json({ user });
 }
 
 export default function SettingsProfilePage() {
-    const data = useLoaderData<typeof loader>();
+  const data = useLoaderData<typeof loader>();
 
-    const truncatedApiKey = data.user.settings?.openAiKey?.substring(0, 10);
+  const truncatedApiKey = data.user.settings?.openAiKey?.substring(0, 10);
 
-    return <div>
-        <p className="font-bold">Current OpenAI API Key</p>
-        <p>{truncatedApiKey}...</p>
+  return (
+    <div>
+      <p className="font-bold">Current OpenAI API Key</p>
+      <p>{truncatedApiKey}...</p>
 
-        <Outlet />
-    </div>;
+      <Outlet />
+    </div>
+  );
 }

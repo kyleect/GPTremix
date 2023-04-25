@@ -70,13 +70,16 @@ export async function verifyLogin(
   return userWithoutPassword;
 }
 
-export async function updateUserApiKey(userId: User["id"], newApiKey: UserSettings["openAiKey"]) {
+export async function updateUserApiKey(
+  userId: User["id"],
+  newApiKey: UserSettings["openAiKey"]
+) {
   return prisma.userSettings.update({
     where: {
-      userId
+      userId,
     },
     data: {
-      openAiKey: newApiKey
-    }
+      openAiKey: newApiKey,
+    },
   });
 }

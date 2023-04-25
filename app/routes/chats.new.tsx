@@ -1,6 +1,12 @@
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { Form, Link, useActionData, useLoaderData, useSearchParams } from "@remix-run/react";
+import {
+  Form,
+  Link,
+  useActionData,
+  useLoaderData,
+  useSearchParams,
+} from "@remix-run/react";
 import * as React from "react";
 import invariant from "tiny-invariant";
 import { getAssistant, getAssistants } from "~/models/assistant.server";
@@ -54,54 +60,68 @@ export default function NewChatPage() {
 
   const needsAnAssissant = data.assistants.length === 0;
 
-  return (
-    needsAnAssissant ? (<Link to="/assistants/new" className="font-medium text-blue-700 mt-3">Create a new assistant</Link>) :
-      <Form
-        method="post"
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: 8,
-          width: "100%",
-        }}
-      >
-        <div>
-          <label className="flex w-full flex-col gap-1">
-            <span className="text-xl sm:text-2xl mb-2">Assistant</span>
-            <select
-              ref={assistantRef}
-              name="assistant"
-              className="w-full flex-1 rounded-md border-2 border-blue-500 px-3 py-2 leading-6"
-              aria-invalid={actionData?.errors?.assistant ? true : undefined}
-              placeholder="You are a helpful assistant."
-              aria-errormessage={
-                actionData?.errors?.assistant
-                  ? "assistant-error"
-                  : undefined
-              }
-            >
-              {data.assistants.map(assistant => {
-                return <option key={assistant.id} value={assistant.id} selected={assistant.id === maybeAssistantId}>{assistant.name}</option>;
-              })}
-            </select>
-          </label>
-          {actionData?.errors?.assistant && (
-            <div className="pt-1 text-red-700" id="assistant-error">
-              {actionData.errors.assistant}
-            </div>
-          )}
-        </div>
-
-        <p>Or <Link to="/assistants/new" className="font-medium text-blue-700 mt-3">create a new assistant</Link></p>
-
-        <div className="text-right">
-          <button
-            type="submit"
-            className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400"
+  return needsAnAssissant ? (
+    <Link to="/assistants/new" className="mt-3 font-medium text-blue-700">
+      Create a new assistant
+    </Link>
+  ) : (
+    <Form
+      method="post"
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: 8,
+        width: "100%",
+      }}
+    >
+      <div>
+        <label className="flex w-full flex-col gap-1">
+          <span className="mb-2 text-xl sm:text-2xl">Assistant</span>
+          <select
+            ref={assistantRef}
+            name="assistant"
+            className="w-full flex-1 rounded-md border-2 border-blue-500 px-3 py-2 leading-6"
+            aria-invalid={actionData?.errors?.assistant ? true : undefined}
+            placeholder="You are a helpful assistant."
+            aria-errormessage={
+              actionData?.errors?.assistant ? "assistant-error" : undefined
+            }
           >
-            Save
-          </button>
-        </div>
-      </Form>
+            {data.assistants.map((assistant) => {
+              return (
+                <option
+                  key={assistant.id}
+                  value={assistant.id}
+                  selected={assistant.id === maybeAssistantId}
+                >
+                  {assistant.name}
+                </option>
+              );
+            })}
+          </select>
+        </label>
+        {actionData?.errors?.assistant && (
+          <div className="pt-1 text-red-700" id="assistant-error">
+            {actionData.errors.assistant}
+          </div>
+        )}
+      </div>
+
+      <p>
+        Or{" "}
+        <Link to="/assistants/new" className="mt-3 font-medium text-blue-700">
+          create a new assistant
+        </Link>
+      </p>
+
+      <div className="text-right">
+        <button
+          type="submit"
+          className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400"
+        >
+          Save
+        </button>
+      </div>
+    </Form>
   );
 }
