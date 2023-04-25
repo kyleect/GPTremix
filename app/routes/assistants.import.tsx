@@ -26,14 +26,7 @@ export async function action({ request }: ActionArgs) {
 
         if (typeof importForAssistant.name !== "string" || importForAssistant.name.length === 0) {
             return json(
-                { errors: { import: "Invalid import for assistant. Both `name` and `prompt` are required" } },
-                { status: 400 }
-            );
-        }
-
-        if (typeof importForAssistant.prompt !== "string" || importForAssistant.prompt.length === 0) {
-            return json(
-                { errors: { import: "Invalid import for assistant. Both `name` and `prompt` are required" } },
+                { errors: { import: "Invalid import for assistant. Both `name` is required" } },
                 { status: 400 }
             );
         }
@@ -70,7 +63,6 @@ export async function action({ request }: ActionArgs) {
         const assistant = await createAssistant({
             userId,
             name: importForAssistant.name as string,
-            prompt: importForAssistant.prompt as string,
             messages: contextMessages
         });
 

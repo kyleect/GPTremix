@@ -30,7 +30,6 @@ export default function AssistantDetailsPage() {
 
     const assistantExport = JSON.stringify({
         name: data.assistant.name,
-        prompt: data.assistant.prompt,
         messages: data.assistant.contextMessages.map(({ role, content }) => ({ role, content }))
     });
 
@@ -41,7 +40,12 @@ export default function AssistantDetailsPage() {
     return (
         <div>
             <h3 className="text-xl sm:text-2xl font-bold">{data.assistant.name}</h3>
-            <p className="mt-5 italic">{data.assistant.prompt}</p>
+
+            <ol>
+                {data.assistant.contextMessages.map((contextMessage, i) => {
+                    return <li key={i}>{contextMessage.role}: {contextMessage.content}</li>
+                })}
+            </ol>
 
             <div className="mt-5">
                 <h4 className="text-lg sm:text-xl font-medium">Chats</h4>

@@ -84,10 +84,6 @@ export async function action({ request, params }: ActionArgs) {
   const gptChatCompletion = await openai.createChatCompletion({
     model: "gpt-3.5-turbo",
     messages: [
-      {
-        role: "system",
-        content: chat.assistant.prompt,
-      },
       ...assistantContext,
       ...messageHistory,
       {
@@ -135,18 +131,6 @@ export default function ChatDetailsPage() {
     <div>
       {data.chat.messages.length > 0 && (
         <ol>
-          <li className={`p-5 border mb-4 border-gray-500 rounded-md bg-gray-300`}>
-            <div className="font-bold capitalize">
-              system
-            </div>{" "}
-            <div>
-              <pre className="whitespace-pre-wrap font-sans mt-2">
-                {data.chat.assistant.prompt}
-              </pre>
-
-              <p className="text-right text-xs sm:text-sm pt-5" title="This message is part of the assistant's context">Context</p>
-            </div>
-          </li>
           {data.assistant.contextMessages.map(message => {
             return (
               <li key={message.id} className={`p-5 border mb-4 border-gray-500 rounded-md ${message.role === "user" ? "bg-gray-200" : "bg-gray-300"}`}>

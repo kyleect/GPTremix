@@ -13,31 +13,19 @@ export async function action({ request }: ActionArgs) {
     const formData = await request.formData();
 
     const name = formData.get("name");
-    const prompt = formData.get("prompt");
     const context = formData.get("context");
 
     if (typeof name !== "string" || name.length === 0) {
         return json(
-            { errors: { name: "Name is required", prompt: null, context: null } },
-            { status: 400 }
-        );
-    }
-
-    if (typeof prompt !== "string" || prompt.length === 0) {
-        return json(
-            { errors: { name: null, prompt: "Prompt is required", context: null } },
+            { errors: { name: "Name is required", context: null } },
             { status: 400 }
         );
     }
 
     const contextMessages: Pick<AssistantContextMessage, "role" | "content">[] = [];
 
-    console.log(JSON.stringify(context));
-
     if (typeof context === "string" && context.length > 0) {
         const messagesJson = context.split("\n");
-
-        console.log(JSON.stringify(messagesJson));
 
         const messageErrors: string[] = [];
 
@@ -73,20 +61,20 @@ export async function action({ request }: ActionArgs) {
 
         if (messageErrors.length > 0) {
             return json(
-                { errors: { name: null, prompt: null, context: messageErrors } },
+                { errors: { name: null, context: messageErrors } },
                 { status: 400 }
             );
         }
     }
 
     try {
-        const assistant = await createAssistant({ userId, name, prompt, messages: contextMessages });
+        const assistant = await createAssistant({ userId, name, messages: contextMessages });
 
         return redirect(`/assistants/${assistant.id}`);
     } catch (e) {
         if (e instanceof Error && e.message.includes("Unique constraint failed on the fields")) {
             return json(
-                { errors: { name: `Assistant names must be unique!`, prompt: null, context: null } },
+                { errors: { name: `Assistant names must be unique!`, context: null } },
                 { status: 400 }
             );
         }
@@ -98,14 +86,11 @@ export async function action({ request }: ActionArgs) {
 export default function NewAssistantPage() {
     const actionData = useActionData<typeof action>();
     const nameRef = React.useRef<HTMLInputElement>(null);
-    const promptRef = React.useRef<HTMLTextAreaElement>(null);
     const contextRef = React.useRef<HTMLTextAreaElement>(null);
 
     React.useEffect(() => {
         if (actionData?.errors?.name) {
             nameRef.current?.focus();
-        } else if (actionData?.errors?.prompt) {
-            promptRef.current?.focus();
         } else if (actionData?.errors?.context) {
             contextRef.current?.focus();
         }
@@ -123,7 +108,7 @@ export default function NewAssistantPage() {
         >
             <div>
                 <label className="flex w-full flex-col gap-1">
-                    <span>Name: </span>
+                    <span className="font-bold">Name</span>
                     <input
                         ref={nameRef}
                         name="name"
@@ -131,14 +116,14 @@ export default function NewAssistantPage() {
                         aria-invalid={actionData?.errors?.name ? true : undefined}
                         placeholder="Helpful Assistant"
                         aria-errormessage={
-                            actionData?.errors?.prompt
-                                ? "prompt-error"
+                            actionData?.errors?.name
+                                ? "name-error"
                                 : undefined
                         }
                     />
                 </label>
                 {actionData?.errors?.name && (
-                    <div className="pt-1 text-red-700" id="prompt-error">
+                    <div className="pt-1 text-red-700" id="name-error">
                         {actionData.errors.name}
                     </div>
                 )}
@@ -146,38 +131,15 @@ export default function NewAssistantPage() {
 
             <div>
                 <label className="flex w-full flex-col gap-1">
-                    <span>Prompt: </span>
-                    <textarea
-                        ref={promptRef}
-                        name="prompt"
-                        rows={8}
-                        className="w-full flex-1 rounded-md border-2 border-blue-500 px-3 py-2 leading-6"
-                        aria-invalid={actionData?.errors?.prompt ? true : undefined}
-                        placeholder="You are a helpful assistant."
-                        aria-errormessage={
-                            actionData?.errors?.prompt
-                                ? "prompt-error"
-                                : undefined
-                        }
-                    >You are a helpful assistant.</textarea>
-                </label>
-                {actionData?.errors?.prompt && (
-                    <div className="pt-1 text-red-700" id="prompt-error">
-                        {actionData.errors.prompt}
-                    </div>
-                )}
-            </div>
-
-            <div>
-                <label className="flex w-full flex-col gap-1">
-                    <span>Context: </span>
+                    <span className="font-bold">Context</span>
                     <textarea
                         ref={contextRef}
                         name="context"
                         rows={8}
                         className="w-full flex-1 rounded-md border-2 border-blue-500 px-3 py-2 leading-6"
                         aria-invalid={actionData?.errors?.context ? true : undefined}
-                        placeholder={`{"role":"user", "content":"What is your favorite color?"}\n{"role":"assistant", "content":"Blue"}`}
+                        placeholder={`{"role":"system","content":"You are a very helpful assistant!"}`}
+                        defaultValue={`{"role":"system","content":"You are a very helpful assistant!"}`}
                         aria-errormessage={
                             actionData?.errors?.context
                                 ? "context-error"

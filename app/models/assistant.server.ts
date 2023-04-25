@@ -11,7 +11,7 @@ export function getAssistant({
     userId: User["id"];
 }) {
     return prisma.assistant.findFirst({
-        select: { id: true, name: true, prompt: true, chats: true, contextMessages: true },
+        select: { id: true, name: true, chats: true, contextMessages: true },
         where: { id, userId },
     });
 }
@@ -19,7 +19,7 @@ export function getAssistant({
 export function getAssistants({ userId }: { userId: User["id"] }) {
     return prisma.assistant.findMany({
         where: { userId },
-        select: { id: true, name: true, prompt: true },
+        select: { id: true, name: true },
         orderBy: { updatedAt: "desc" },
     });
 }
@@ -28,19 +28,16 @@ export function createAssistant(
     {
         userId,
         name,
-        prompt,
         messages
     }: {
         userId: User["id"],
         name: Assistant["name"],
-        prompt: Assistant["prompt"],
         messages: Pick<AssistantContextMessage, "role" | "content">[]
     }
 ) {
     return prisma.assistant.create({
         data: {
             name,
-            prompt,
             contextMessages: {
                 create: messages
             },
