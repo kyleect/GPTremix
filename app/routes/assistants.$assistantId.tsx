@@ -1,4 +1,5 @@
-import { ActionArgs, LoaderArgs, Response } from "@remix-run/node";
+import type { ActionArgs, LoaderArgs } from "@remix-run/node";
+import { Response } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import {
@@ -63,7 +64,11 @@ export default function AssistantDetailsPage() {
         <div>
             <h3 className="text-xl sm:text-2xl font-bold">{data.assistant.name}</h3>
 
-            <Form method="post" className="mt-5">
+            <Form method="post" className="mt-5" onSubmit={(event) => {
+                if (!confirm("Are you sure you want to delete this assistant?")) {
+                    event.preventDefault();
+                }
+            }}>
                 <button name="intent" value="delete" className="rounded-md bg-gray-400 px-4 py-3 font-medium text-white hover:bg-gray-500">Delete</button>
             </Form>
 

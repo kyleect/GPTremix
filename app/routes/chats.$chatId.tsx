@@ -1,4 +1,5 @@
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
+import { redirect } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import {
   Form,
@@ -15,7 +16,7 @@ import invariant from "tiny-invariant";
 import { AssistantChatMessage, ContextChatMessage, UserChatMessage } from "~/components/ChatMessage";
 import { getAssistant } from "~/models/assistant.server";
 
-import { addMessage, getChat } from "~/models/chat.server";
+import { addMessage, deleteChat, getChat } from "~/models/chat.server";
 import { requireUser, requireUserId } from "~/session.server";
 
 export async function loader({ request, params }: LoaderArgs) {
@@ -46,10 +47,18 @@ export async function action({ request, params }: ActionArgs) {
   const chat = await getChat({ userId: user.id, id: params.chatId });
   invariant(chat, `Chat was not found with id ${params.chatId}`);
 
+  const formData = await request.formData();
+
+  const intent = await formData.get("intent");
+
+  if (intent === "delete") {
+    await deleteChat({ id: chat.id, userId: user.id });
+
+    return redirect('/chats');
+  }
+
   const assistant = await getAssistant({ userId: user.id, id: chat.assistant.id });
   invariant(assistant, `Assistant was not found with id ${chat.assistant.id} for chat ${chat.id}`);
-
-  const formData = await request.formData();
 
   const userInput = formData.get("userInput");
   if (typeof userInput !== "string" || userInput.length === 0) {
@@ -157,7 +166,7 @@ export default function ChatDetailsPage() {
         </ol>
       )}
 
-      <Form method="post" replace className="mt-4">
+      <div className="mt-4">
         <div>
           <label className="flex w-full flex-col gap-1">
             <textarea
@@ -172,6 +181,7 @@ export default function ChatDetailsPage() {
                 actionData?.errors?.userInput ? "user-input-error" : undefined
               }
               autoFocus
+              form="submit-form"
             />
           </label>
           {actionData?.errors?.userInput && (
@@ -181,14 +191,33 @@ export default function ChatDetailsPage() {
           )}
         </div>
 
-        <button
-          type="submit"
-          className="my-5 rounded bg-blue-500  px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400 disabled:bg-gray-400"
-          disabled={!isReady}
-        >
-          {isReady ? "Send" : "Sending..."}
-        </button>
-      </Form>
+        <div className="flex justify-between py-5">
+          <button
+            type="submit"
+            className="rounded bg-blue-500  px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400 disabled:bg-gray-400"
+            disabled={!isReady}
+            form="submit-form"
+          >
+            {isReady ? "Send" : "Sending..."}
+          </button>
+
+          <button
+            form="delete-form"
+            name="intent"
+            value="delete"
+            className="rounded bg-gray-400 px-4 py-2  text-white hover:bg-gray-500">
+            Delete
+          </button>
+        </div>
+      </div>
+
+      <Form method="post" replace className="mt-4" id="submit-form" />
+
+      <Form method="post" className="mt-5" onSubmit={(event) => {
+        if (!confirm("Are you sure you want to delete this chat?")) {
+          event.preventDefault();
+        }
+      }} id="delete-form" />
     </div>
   );
 }
