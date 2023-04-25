@@ -1,6 +1,5 @@
-import type { ActionArgs, LoaderArgs } from "@remix-run/node";
+import type { LoaderArgs } from "@remix-run/node";
 import { Response } from "@remix-run/node";
-import { redirect } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import {
     NavLink,
@@ -10,28 +9,9 @@ import {
     useRouteError,
 } from "@remix-run/react";
 import invariant from "tiny-invariant";
-import { deleteAssistant, getAssistant } from "~/models/assistant.server";
+import { getAssistant } from "~/models/assistant.server";
 
 import { requireUserId } from "~/session.server";
-
-export async function action({ request, params }: ActionArgs) {
-    const userId = await requireUserId(request);
-    invariant(params.assistantId, "assistantId not found");
-
-    const formData = await request.formData();
-
-    const intent = formData.get("intent");
-
-    if (intent === "delete") {
-        await deleteAssistant({ userId, id: params.assistantId });
-
-        return redirect("/assistants");
-    }
-
-    return new Response(null, {
-        status: 404
-    });
-}
 
 export async function loader({ request, params }: LoaderArgs) {
     const userId = await requireUserId(request);
@@ -48,8 +28,6 @@ export async function loader({ request, params }: LoaderArgs) {
 
 export default function AssistantDetailsPage() {
     const data = useLoaderData<typeof loader>();
-
-
 
     return (
         <div>
@@ -68,7 +46,7 @@ export default function AssistantDetailsPage() {
                     <NavLink
                         className={({ isActive }) => `${isActive ? "font-bold" : undefined} p-2`}
                         to={`/assistants/${data.assistant.id}/context`}
-                        end>
+                    >
                         Context
                     </NavLink>
                 </li>
