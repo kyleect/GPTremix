@@ -62,14 +62,14 @@ export default function SettingsApiKeyEditPage() {
         <div className="mt-5 space-x-5">
           <button
             type="submit"
-            className="rounded bg-blue-500 px-4 py-[10px] text-white hover:bg-blue-600 focus:bg-blue-400"
+            className="rounded bg-blue-500 px-4 py-[8px] text-white hover:bg-blue-600 focus:bg-blue-400"
           >
             Save
           </button>
 
           <Link
             to="/settings/apikey"
-            className="rounded bg-gray-500 px-4 py-[13px] text-white hover:bg-gray-600 focus:bg-gray-400"
+            className="rounded bg-gray-500 px-4 py-[11px] text-white hover:bg-gray-600 focus:bg-gray-400"
           >
             Cancel
           </Link>

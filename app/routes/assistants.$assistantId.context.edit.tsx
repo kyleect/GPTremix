@@ -1,5 +1,5 @@
 import type { AssistantContextMessage } from "@prisma/client";
-import { Form, useActionData } from "@remix-run/react";
+import { Form, Link, useActionData } from "@remix-run/react";
 import type { ActionArgs } from "@remix-run/server-runtime";
 import { redirect } from "@remix-run/server-runtime";
 import { json } from "@remix-run/server-runtime";
@@ -128,13 +128,20 @@ export default function AssistantDetailsContextEditPage() {
         )}
       </div>
 
-      <div className="py-5">
+      <div className="space-x-5 py-5">
         <button
           type="submit"
           className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400"
         >
           Save
         </button>
+
+        <Link
+          to={`/assistants/${data.assistant.id}/context`}
+          className="rounded bg-gray-500 px-4 py-[11px] text-white hover:bg-gray-600 focus:bg-gray-400"
+        >
+          Cancel
+        </Link>
       </div>
     </Form>
   );
