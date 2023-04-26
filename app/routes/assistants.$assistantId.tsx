@@ -38,8 +38,8 @@ export default function AssistantDetailsPage() {
           <NavLink
             className={({ isActive }) =>
               `${
-                isActive ? "bg-gray-500 font-bold text-white" : undefined
-              } block p-4`
+                isActive ? "bg-slate-800 font-bold text-slate-100 " : undefined
+              } block p-3`
             }
             to={`/assistants/${data.assistant.id}`}
             end
@@ -51,8 +51,8 @@ export default function AssistantDetailsPage() {
           <NavLink
             className={({ isActive }) =>
               `${
-                isActive ? "bg-gray-500 font-bold text-white" : undefined
-              } block p-4`
+                isActive ? "bg-slate-800 font-bold text-slate-100" : undefined
+              } block p-3`
             }
             to={`/assistants/${data.assistant.id}/context`}
           >
@@ -63,8 +63,8 @@ export default function AssistantDetailsPage() {
           <NavLink
             className={({ isActive }) =>
               `${
-                isActive ? "bg-gray-500 font-bold text-white" : undefined
-              } block p-4`
+                isActive ? "bg-slate-800 font-bold text-slate-100" : undefined
+              } block p-3`
             }
             to={`/assistants/${data.assistant.id}/chats`}
             end
@@ -76,8 +76,8 @@ export default function AssistantDetailsPage() {
           <NavLink
             className={({ isActive }) =>
               `${
-                isActive ? "bg-gray-500 font-bold text-white" : undefined
-              } block p-4`
+                isActive ? "bg-slate-800 font-bold text-slate-100" : undefined
+              } block p-3`
             }
             to={`/assistants/${data.assistant.id}/export`}
             end
@@ -89,8 +89,8 @@ export default function AssistantDetailsPage() {
           <NavLink
             className={({ isActive }) =>
               `${
-                isActive ? "bg-gray-500 font-bold text-white" : undefined
-              } block p-4`
+                isActive ? "bg-slate-800 font-bold text-slate-100" : undefined
+              } block p-3`
             }
             to={`/assistants/${data.assistant.id}/fork`}
             end

@@ -51,7 +51,7 @@ export default function ChatsPage() {
           )}
         </div>
 
-        <div className="w-9/12 flex-1 p-6 lg:w-10/12">
+        <div className="m-3 w-9/12 flex-1 lg:w-10/12">
           <Outlet />
         </div>
       </main>
