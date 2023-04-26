@@ -18,7 +18,7 @@ export default function AssistantsPage() {
   const data = useLoaderData<typeof loader>();
 
   return (
-    <div className="flex h-full min-h-screen flex-col">
+    <div>
       <LoggedInHeader />
 
       <main className="flex h-full bg-white text-sm sm:text-base">

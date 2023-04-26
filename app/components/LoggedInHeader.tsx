@@ -3,7 +3,10 @@ import React from "react";
 
 export default function LoggedInHeader() {
   return (
-    <header className="flex items-center justify-between bg-slate-800 p-4 text-white">
+    <header
+      className="flex items-center justify-between bg-slate-800 p-2 text-white"
+      style={{ position: "sticky", top: 0 }}
+    >
       <h1 className="text-2xl font-bold">
         <Link to="/">GPTremix</Link>
       </h1>
