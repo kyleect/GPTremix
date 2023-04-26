@@ -1,11 +1,17 @@
 import { Form } from "@remix-run/react";
-import type { ActionArgs } from "@remix-run/server-runtime";
+import type { ActionArgs, LoaderArgs } from "@remix-run/server-runtime";
 import { redirect } from "@remix-run/server-runtime";
 import invariant from "tiny-invariant";
 import { deleteAssistant } from "~/models/assistant.server";
 import { requireUserId } from "~/session.server";
 import { useMatchesData } from "~/utils";
 import type { loader as parentLoader } from "~/routes/assistants.$assistantId";
+
+export async function loader({ request }: LoaderArgs) {
+  await requireUserId(request);
+
+  return null;
+}
 
 export async function action({ request, params }: ActionArgs) {
   const userId = await requireUserId(request);
