@@ -28,6 +28,7 @@ export default function AssistantDetailsContextIndexPage() {
               <ContextChatMessage
                 authorOrRole={contextMessage.role}
                 content={contextMessage.content}
+                compact
               />
             </li>
           );
