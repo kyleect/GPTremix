@@ -1,7 +1,7 @@
 import React from "react";
 import invariant from "tiny-invariant";
 import { useMatchesData } from "~/utils";
-import type { loader as parentLoader } from "~/routes/assistants.$assistantId";
+import type { loader as parentLoader } from "~/routes/_user.assistants.$assistantId";
 import type { ActionArgs, LoaderArgs } from "@remix-run/server-runtime";
 import { redirect } from "@remix-run/server-runtime";
 import { json } from "@remix-run/server-runtime";
@@ -68,7 +68,7 @@ export default function AssistantDetailsForkPage() {
   const nameRef = React.useRef<HTMLInputElement>(null);
 
   const data = useMatchesData<typeof parentLoader>(
-    "routes/assistants.$assistantId"
+    "routes/_user.assistants.$assistantId"
   );
 
   invariant(data, "Unable to load assistant data from parent route");

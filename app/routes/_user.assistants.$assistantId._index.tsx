@@ -5,7 +5,7 @@ import invariant from "tiny-invariant";
 import { deleteAssistant } from "~/models/assistant.server";
 import { requireUserId } from "~/session.server";
 import { useMatchesData } from "~/utils";
-import type { loader as parentLoader } from "~/routes/assistants.$assistantId";
+import type { loader as parentLoader } from "~/routes/_user.assistants.$assistantId";
 
 export async function loader({ request }: LoaderArgs) {
   await requireUserId(request);

@@ -92,7 +92,7 @@ export default function AssistantDetailsPage() {
                 isActive ? "bg-slate-800 font-bold text-slate-100" : undefined
               } block p-3`
             }
-            to={`/assistants/${data.assistant.id}/fork`}
+            to={`/_user.assistants/${data.assistant.id}/fork`}
             end
           >
             Fork

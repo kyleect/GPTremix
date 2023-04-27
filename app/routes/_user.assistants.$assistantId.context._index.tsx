@@ -2,7 +2,7 @@ import { Link } from "@remix-run/react";
 import type { LoaderArgs } from "@remix-run/server-runtime";
 import invariant from "tiny-invariant";
 import { ContextChatMessage } from "~/components/ChatMessage";
-import type { loader as parentLoader } from "~/routes/assistants.$assistantId";
+import type { loader as parentLoader } from "~/routes/_user.assistants.$assistantId";
 import { requireUserId } from "~/session.server";
 import { useMatchesData } from "~/utils";
 
@@ -14,7 +14,7 @@ export async function loader({ request }: LoaderArgs) {
 
 export default function AssistantDetailsContextIndexPage() {
   const data = useMatchesData<typeof parentLoader>(
-    "routes/assistants.$assistantId"
+    "routes/_user.assistants.$assistantId"
   );
 
   invariant(data, "Unable to load assistant data from parent route");

@@ -4,7 +4,6 @@ import { Link, NavLink, Outlet, useLoaderData } from "@remix-run/react";
 
 import { requireUserId } from "~/session.server";
 import { getChatListItems } from "~/models/chat.server";
-import LoggedInHeader from "~/components/LoggedInHeader";
 
 export const meta: V2_MetaFunction = () => [{ title: "GPTremix" }];
 
@@ -19,8 +18,6 @@ export default function ChatsPage() {
 
   return (
     <div>
-      <LoggedInHeader />
-
       <main className="flex h-full bg-white text-sm sm:text-base">
         <div className="h-full w-3/12 border-r  bg-gray-50 lg:w-2/12">
           <Link to="new" className="block p-4 text-blue-500">

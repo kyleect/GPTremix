@@ -3,7 +3,6 @@ import { json } from "@remix-run/node";
 import { NavLink, Outlet, useLoaderData } from "@remix-run/react";
 
 import { requireUser } from "~/session.server";
-import LoggedInHeader from "~/components/LoggedInHeader";
 
 export const meta: V2_MetaFunction = () => [{ title: "GPTremix" }];
 
@@ -17,9 +16,7 @@ export default function ChatsPage() {
   const data = useLoaderData<typeof loader>();
 
   return (
-    <div className="flex h-full min-h-screen flex-col">
-      <LoggedInHeader />
-
+    <div>
       <main className="flex h-full bg-white text-sm sm:text-base">
         <div className="h-full w-3/12 border-r  bg-gray-50 lg:w-2/12">
           <ol>

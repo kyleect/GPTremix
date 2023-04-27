@@ -1,7 +1,7 @@
 import React from "react";
 import invariant from "tiny-invariant";
 import { useMatchesData } from "~/utils";
-import type { loader as parentLoader } from "~/routes/assistants.$assistantId";
+import type { loader as parentLoader } from "~/routes/_user.assistants.$assistantId";
 import type { LoaderArgs } from "@remix-run/server-runtime";
 import { requireUserId } from "~/session.server";
 
@@ -13,7 +13,7 @@ export async function loader({ request }: LoaderArgs) {
 
 export default function AssistantDetailsExportPage() {
   const data = useMatchesData<typeof parentLoader>(
-    "routes/assistants.$assistantId"
+    "routes/_user.assistants.$assistantId"
   );
 
   invariant(data, "Unable to load assistant data from parent route");

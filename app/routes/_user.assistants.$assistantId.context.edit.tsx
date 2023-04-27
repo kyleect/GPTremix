@@ -8,7 +8,7 @@ import invariant from "tiny-invariant";
 import { updateAssistantContextMessages } from "~/models/assistant.server";
 import { requireUserId } from "~/session.server";
 import { useMatchesData } from "~/utils";
-import type { loader as parentLoader } from "~/routes/assistants.$assistantId";
+import type { loader as parentLoader } from "~/routes/_user.assistants.$assistantId";
 
 export async function loader({ request }: LoaderArgs) {
   await requireUserId(request);
@@ -88,7 +88,7 @@ export async function action({ request, params }: ActionArgs) {
 
 export default function AssistantDetailsContextEditPage() {
   const data = useMatchesData<typeof parentLoader>(
-    "routes/assistants.$assistantId"
+    "routes/_user.assistants.$assistantId"
   );
 
   invariant(data, "Unable to load assistant data from parent route");
