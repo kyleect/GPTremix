@@ -5,6 +5,8 @@ import { prisma } from "~/db.server";
 
 export type { User } from "@prisma/client";
 
+export const PASSWORD_SALT = 10;
+
 export async function getUserById(id: User["id"]) {
   return prisma.user.findUnique({ where: { id }, include: { settings: true } });
 }
@@ -18,7 +20,7 @@ export async function createUser(
   password: string,
   openAiKey: string
 ) {
-  const hashedPassword = await bcrypt.hash(password, 10);
+  const hashedPassword = await bcrypt.hash(password, PASSWORD_SALT);
 
   return prisma.user.create({
     data: {
@@ -38,7 +40,7 @@ export async function createUser(
 }
 
 export async function deleteUserByEmail(email: User["email"]) {
-  return prisma.user.delete({ where: { email } });
+  return prisma.user.deleteMany({ where: { email } });
 }
 
 export async function verifyLogin(
@@ -74,11 +76,15 @@ export async function updateUserApiKey(
   userId: User["id"],
   newApiKey: UserSettings["openAiKey"]
 ) {
-  return prisma.userSettings.update({
+  return prisma.userSettings.upsert({
     where: {
       userId,
     },
-    data: {
+    create: {
+      userId,
+      openAiKey: newApiKey,
+    },
+    update: {
       openAiKey: newApiKey,
     },
   });

@@ -34,7 +34,7 @@ export async function action({ request, params }: ActionArgs) {
 
 export default function AssistantDetailsIndexPage() {
   const data = useMatchesData<typeof parentLoader>(
-    "routes/assistants.$assistantId"
+    "routes/_user.assistants.$assistantId"
   );
 
   invariant(data, "Unable to load assistant data from parent route");
