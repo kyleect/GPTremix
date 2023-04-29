@@ -17,7 +17,7 @@ export function ChatMessage({
   compact,
 }: ChatMessageProps) {
   return (
-    <div className={`mb-4 rounded ${compact ? "p-3" : "p-5"} ${className}`}>
+    <div className={`rounded ${compact ? "p-3" : "p-5"} ${className}`}>
       <div className="font-bold capitalize">{author}</div>{" "}
       <div>
         <pre

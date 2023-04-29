@@ -3,6 +3,7 @@ import { redirect } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import {
   Form,
+  Link,
   isRouteErrorResponse,
   useActionData,
   useLoaderData,
@@ -147,35 +148,80 @@ export default function ChatDetailsPage() {
 
   return (
     <div>
-      {data.chat.messages.length > 0 && (
-        <ol>
-          {data.assistant.contextMessages.map((message) => (
-            <li key={message.id}>
-              <ContextChatMessage
-                authorOrRole={message.role}
+      <p className="mb-10 text-lg font-bold ">
+        Chatting with{" "}
+        <Link to={`/assistants/${data.assistant.id}`} className="text-blue-700">
+          {data.assistant.name}
+        </Link>
+      </p>
+      <ol>
+        {data.assistant.contextMessages.map((message) => (
+          <li
+            key={message.id}
+            id={message.id}
+            className="group mt-5 first:mt-0"
+          >
+            <ContextChatMessage
+              authorOrRole={message.role}
+              content={message.content}
+            />
+          </li>
+        ))}
+        {data.chat.messages.map((message, i) => (
+          <li
+            key={message.id}
+            id={`message-${message.id}`}
+            className="group mt-5 first:mt-0"
+          >
+            {message.role === "user" ? (
+              <UserChatMessage
                 content={message.content}
+                createdAt={message.createdAt}
               />
-            </li>
-          ))}
-          {data.chat.messages.map((message) => (
-            <li key={message.id}>
-              {message.role === "user" ? (
-                <UserChatMessage
-                  content={message.content}
-                  createdAt={message.createdAt}
-                />
-              ) : (
-                <AssistantChatMessage
-                  content={message.content}
-                  createdAt={message.createdAt}
-                  assistantId={data.assistant.id}
-                  assistantName={data.assistant.name}
-                />
+            ) : (
+              <AssistantChatMessage
+                content={message.content}
+                createdAt={message.createdAt}
+                assistantId={data.assistant.id}
+                assistantName={data.assistant.name}
+              />
+            )}
+
+            <ol className="invisible flex w-full justify-end space-x-3 group-hover:visible">
+              <li className="text-sm text-blue-700 hover:font-bold">
+                <Link
+                  className="inline-block p-3"
+                  to={`#message-${message.id}`}
+                >
+                  Link
+                </Link>
+              </li>
+
+              {i > 0 && (
+                <li className="text-sm text-blue-700 hover:font-bold">
+                  <Link
+                    className="inline-block p-3"
+                    to={`#message-${data.chat.messages[i - 1].id}`}
+                  >
+                    Previous
+                  </Link>
+                </li>
               )}
-            </li>
-          ))}
-        </ol>
-      )}
+
+              {i + 1 < data.chat.messages.length && (
+                <li className="text-sm text-blue-700 hover:font-bold">
+                  <Link
+                    className="inline-block p-3"
+                    to={`#message-${data.chat.messages[i + 1].id}`}
+                  >
+                    Next
+                  </Link>
+                </li>
+              )}
+            </ol>
+          </li>
+        ))}
+      </ol>
 
       <div className="mt-4">
         <div>
@@ -191,7 +237,6 @@ export default function ChatDetailsPage() {
               aria-errormessage={
                 actionData?.errors?.userInput ? "user-input-error" : undefined
               }
-              autoFocus
               form="submit-form"
             />
           </label>
