@@ -24,7 +24,7 @@ export default function AssistantDetailsContextIndexPage() {
       <ol>
         {data.assistant.contextMessages.map((contextMessage, i) => {
           return (
-            <li key={i}>
+            <li key={i} className="mb-5">
               <ContextChatMessage
                 authorOrRole={contextMessage.role}
                 content={contextMessage.content}

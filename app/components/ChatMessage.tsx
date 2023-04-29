@@ -85,7 +85,7 @@ export function UserChatMessage({
       author="User"
       content={content}
       dateOrContext={formatRelative(new Date(createdAt), new Date())}
-      className="bg-white"
+      className="bg-gray-100"
       compact={compact}
     />
   );

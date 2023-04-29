@@ -7,6 +7,7 @@ import {
   isRouteErrorResponse,
   useActionData,
   useLoaderData,
+  useLocation,
   useNavigation,
   useRouteError,
 } from "@remix-run/react";
@@ -137,6 +138,9 @@ export default function ChatDetailsPage() {
   const data = useLoaderData<typeof loader>();
   const inputRef = React.useRef<HTMLTextAreaElement>(null);
   const navigation = useNavigation();
+  const location = useLocation();
+
+  debugger;
 
   const isReady = navigation.state === "idle";
 
@@ -148,12 +152,6 @@ export default function ChatDetailsPage() {
 
   return (
     <div>
-      <p className="mb-10 text-lg font-bold ">
-        Chatting with{" "}
-        <Link to={`/assistants/${data.assistant.id}`} className="text-blue-700">
-          {data.assistant.name}
-        </Link>
-      </p>
       <ol>
         {data.assistant.contextMessages.map((message) => (
           <li
@@ -167,11 +165,16 @@ export default function ChatDetailsPage() {
             />
           </li>
         ))}
+      </ol>
+
+      <hr className="my-10" />
+
+      <ol>
         {data.chat.messages.map((message, i) => (
           <li
             key={message.id}
             id={`message-${message.id}`}
-            className="group mt-5 first:mt-0"
+            className="group mt-5 rounded border border-transparent first:mt-0 hover:border-slate-600 hover:bg-slate-200"
           >
             {message.role === "user" ? (
               <UserChatMessage
@@ -190,7 +193,7 @@ export default function ChatDetailsPage() {
             <ol className="invisible flex w-full justify-end space-x-3 group-hover:visible">
               <li className="text-sm text-blue-700 hover:font-bold">
                 <Link
-                  className="inline-block p-3"
+                  className="inline-block p-2"
                   to={`#message-${message.id}`}
                 >
                   Link
@@ -200,7 +203,7 @@ export default function ChatDetailsPage() {
               {i > 0 && (
                 <li className="text-sm text-blue-700 hover:font-bold">
                   <Link
-                    className="inline-block p-3"
+                    className="inline-block p-2"
                     to={`#message-${data.chat.messages[i - 1].id}`}
                   >
                     Previous
@@ -211,7 +214,7 @@ export default function ChatDetailsPage() {
               {i + 1 < data.chat.messages.length && (
                 <li className="text-sm text-blue-700 hover:font-bold">
                   <Link
-                    className="inline-block p-3"
+                    className="inline-block p-2"
                     to={`#message-${data.chat.messages[i + 1].id}`}
                   >
                     Next
@@ -268,9 +271,16 @@ export default function ChatDetailsPage() {
         </div>
       </div>
 
-      <Form method="post" replace className="mt-4" id="submit-form" />
+      <Form
+        action={`${location.pathname}`}
+        method="post"
+        replace
+        className="mt-4"
+        id="submit-form"
+      />
 
       <Form
+        action={`${location.pathname}`}
         method="post"
         className="mt-5"
         onSubmit={(event) => {
