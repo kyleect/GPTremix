@@ -2,6 +2,7 @@ import type { LoaderArgs } from "@remix-run/node";
 import { Response } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import {
+  Link,
   NavLink,
   Outlet,
   isRouteErrorResponse,
@@ -32,6 +33,13 @@ export default function AssistantDetailsPage() {
   return (
     <div>
       <h3 className="text-xl font-bold sm:text-2xl">{data.assistant.name}</h3>
+
+      <Link
+        to={`/chats/new?assistantId=${data.assistant.id}`}
+        className="block py-2 text-blue-700"
+      >
+        Start New Chat
+      </Link>
 
       <ul className="my-10 flex justify-between text-center">
         <li className="grow">

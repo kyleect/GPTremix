@@ -21,14 +21,6 @@ export default function AssistantDetailsChatsPage() {
   return (
     <>
       <ol className="mt-2">
-        <li>
-          <Link
-            to={`/chats/new?assistantId=${data.assistant.id}`}
-            className="block py-2 text-blue-700"
-          >
-            Start New Chat
-          </Link>
-        </li>
         {data.assistant.chats.map((chat) => {
           return (
             <li key={chat.id} className="py-2">

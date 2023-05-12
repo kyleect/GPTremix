@@ -76,7 +76,7 @@ export default function NewChatPage() {
     >
       <div>
         <label className="flex w-full flex-col gap-1">
-          <span className="mb-2 text-xl sm:text-2xl">Assistant</span>
+          <span className="mb-2 text-xl sm:text-2xl">Chat With:</span>
           <select
             ref={assistantRef}
             name="assistant"

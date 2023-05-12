@@ -1,4 +1,4 @@
-import { Form } from "@remix-run/react";
+import { Form, Link } from "@remix-run/react";
 import type { ActionArgs, LoaderArgs } from "@remix-run/server-runtime";
 import { redirect } from "@remix-run/server-runtime";
 import invariant from "tiny-invariant";
@@ -41,7 +41,13 @@ export default function AssistantDetailsIndexPage() {
 
   return (
     <>
-      <p>Chats: {data.assistant.chats.length}</p>
+      <p>
+        <Link to="chats" className=" text-blue-700">
+          Chats
+        </Link>
+        {": "}
+        {data.assistant.chats.length}
+      </p>
       <p>Created: {data.assistant.createdAt}</p>
       <Form
         method="post"
