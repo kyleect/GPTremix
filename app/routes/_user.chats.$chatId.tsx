@@ -80,13 +80,15 @@ export async function action({ request, params }: ActionArgs) {
     );
   }
 
-  const assistantContext = assistant.contextMessages.map(
-    ({ role, content }) =>
-      ({
-        role,
-        content,
-      } as ChatCompletionRequestMessage)
-  );
+  const assistantContext = assistant.contextMessages
+    .map((x) => x.assistantContextMessage)
+    .map(
+      ({ role, content }) =>
+        ({
+          role,
+          content,
+        } as ChatCompletionRequestMessage)
+    );
 
   const messageHistory = chat.messages.map(
     ({ role, content }) =>
@@ -153,18 +155,20 @@ export default function ChatDetailsPage() {
   return (
     <div>
       <ol>
-        {data.assistant.contextMessages.map((message) => (
-          <li
-            key={message.id}
-            id={message.id}
-            className="group mt-5 first:mt-0"
-          >
-            <ContextChatMessage
-              authorOrRole={message.role}
-              content={message.content}
-            />
-          </li>
-        ))}
+        {data.assistant.contextMessages
+          .map((x) => x.assistantContextMessage)
+          .map((message) => (
+            <li
+              key={message.id}
+              id={message.id}
+              className="group mt-5 first:mt-0"
+            >
+              <ContextChatMessage
+                authorOrRole={message.role}
+                content={message.content}
+              />
+            </li>
+          ))}
       </ol>
 
       <hr className="my-10" />

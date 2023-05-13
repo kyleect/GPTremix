@@ -26,8 +26,8 @@ export default function AssistantDetailsContextIndexPage() {
           return (
             <li key={i} className="mb-5">
               <ContextChatMessage
-                authorOrRole={contextMessage.role}
-                content={contextMessage.content}
+                authorOrRole={contextMessage.assistantContextMessage.role}
+                content={contextMessage.assistantContextMessage.content}
                 compact
               />
             </li>

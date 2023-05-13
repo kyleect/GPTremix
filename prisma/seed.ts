@@ -12,11 +12,30 @@ async function seedAssistantForUser(
   assistantName: Assistant["name"],
   assitantMessages: Pick<AssistantContextMessage, "role" | "content">[]
 ) {
+  const assistantMessagesWithUserId = await Promise.all(
+    assitantMessages
+      .map((m) => ({
+        ...m,
+        userId,
+      }))
+      .map((m) =>
+        prisma.assistantContextMessage.create({
+          data: m,
+        })
+      )
+  );
+
   return await prisma.assistant.create({
     data: {
       name: assistantName,
       contextMessages: {
-        create: assitantMessages,
+        create: assistantMessagesWithUserId.map((x) => ({
+          assistantContextMessage: {
+            connect: {
+              id: x.id,
+            },
+          },
+        })),
       },
       user: {
         connect: {

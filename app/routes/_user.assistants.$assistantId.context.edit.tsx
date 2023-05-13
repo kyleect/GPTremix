@@ -103,6 +103,7 @@ export default function AssistantDetailsContextEditPage() {
   }, [actionData]);
 
   const messagesJson = data.assistant.contextMessages
+    .map((x) => x.assistantContextMessage)
     .map(({ role, content }) => ({
       role,
       content,

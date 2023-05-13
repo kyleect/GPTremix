@@ -1,6 +1,4 @@
 import type { User, Assistant, AssistantContextMessage } from "@prisma/client";
-import invariant from "tiny-invariant";
-
 import { prisma } from "~/db.server";
 
 export type { Chat } from "@prisma/client";
@@ -16,7 +14,17 @@ export function getAssistant({
       id: true,
       name: true,
       chats: true,
-      contextMessages: true,
+      contextMessages: {
+        select: {
+          assistantContextMessage: {
+            select: {
+              id: true,
+              role: true,
+              content: true,
+            },
+          },
+        },
+      },
       createdAt: true,
     },
     where: { id, userId },
@@ -31,7 +39,7 @@ export function getAssistants({ userId }: { userId: User["id"] }) {
   });
 }
 
-export function createAssistant({
+export async function createAssistant({
   userId,
   name,
   messages,
@@ -40,11 +48,30 @@ export function createAssistant({
   name: Assistant["name"];
   messages: Pick<AssistantContextMessage, "role" | "content">[];
 }) {
+  const assistantMessagesWithUserId = await Promise.all(
+    messages
+      .map((m) => ({
+        ...m,
+        userId,
+      }))
+      .map((m) =>
+        prisma.assistantContextMessage.create({
+          data: m,
+        })
+      )
+  );
+
   return prisma.assistant.create({
     data: {
       name,
       contextMessages: {
-        create: messages,
+        create: assistantMessagesWithUserId.map((x) => ({
+          assistantContextMessage: {
+            connect: {
+              id: x.id,
+            },
+          },
+        })),
       },
       user: {
         connect: {
@@ -68,24 +95,21 @@ export async function updateAssistantContextMessages(
   { id, userId }: Pick<Assistant, "id"> & { userId: User["id"] },
   messages: Pick<AssistantContextMessage, "role" | "content">[]
 ) {
-  const assistant = await getAssistant({ id, userId });
-
-  invariant(assistant, "Assistant was not found");
-
-  await prisma.assistantContextMessage.deleteMany({
-    where: {
-      assistantId: id,
-    },
-  });
-
-  await prisma.assistant.update({
-    where: {
-      id,
-    },
-    data: {
-      contextMessages: {
-        create: messages,
-      },
-    },
-  });
+  // const assistant = await getAssistant({ id, userId });
+  // invariant(assistant, "Assistant was not found");
+  // await prisma.assistantContextMessage.deleteMany({
+  //   where: {
+  //     assistantId: id,
+  //   },
+  // });
+  // await prisma.assistant.update({
+  //   where: {
+  //     id,
+  //   },
+  //   data: {
+  //     contextMessages: {
+  //       create: messages,
+  //     },
+  //   },
+  // });
 }

@@ -14,10 +14,11 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  password   Password?
-  settings   UserSettings?
-  chats      Chat[]
-  assistants Assistant[]
+  password        Password?
+  settings        UserSettings?
+  chats           Chat[]
+  assistants      Assistant[]
+  contextMessages AssistantContextMessage[]
 }
 
 model Password {
@@ -48,7 +49,7 @@ model Assistant {
   userId String
 
   chats           Chat[]
-  contextMessages AssistantContextMessage[]
+  contextMessages ContextMessagesOnAssistants[]
 
   @@unique([userId, name])
 }
@@ -59,11 +60,27 @@ model AssistantContextMessage {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  role    String
-  content String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String
 
-  assistant   Assistant @relation(fields: [assistantId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  assistantId String
+  role       String
+  content    String
+  assistants ContextMessagesOnAssistants[]
+
+  @@unique([userId, role, content])
+}
+
+model ContextMessagesOnAssistants {
+  assistant               Assistant               @relation(fields: [assistantId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  assistantId             String
+  assistantContextMessage AssistantContextMessage @relation(fields: [contextMessageId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  contextMessageId        String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([assistantId, contextMessageId])
+  @@unique([assistantId, contextMessageId])
 }
 
 model Chat {
